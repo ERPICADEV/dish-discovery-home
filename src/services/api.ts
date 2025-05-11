@@ -4,7 +4,7 @@ import { toast } from "@/hooks/use-toast";
 const API_BASE_URL = "https://build-idish-backend-production.up.railway.app";
 
 interface ApiOptions {
-  method: string;
+  method?: string;
   headers?: Record<string, string>;
   body?: string;
   requiresAuth?: boolean;
@@ -15,7 +15,7 @@ export const api = async <T>(
   options: ApiOptions = { method: "GET" }
 ): Promise<T> => {
   try {
-    const { method, body, requiresAuth = false } = options;
+    const { method = "GET", body, requiresAuth = false } = options;
     
     const headers: Record<string, string> = {
       "Content-Type": "application/json",

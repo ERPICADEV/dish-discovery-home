@@ -15,6 +15,7 @@ export interface Dish {
 
 export const getAllDishes = async () => {
   const response = await api<{ dishes: Dish[] }>("/dishes/all", {
+    method: "GET",
     requiresAuth: true,
   });
   
@@ -36,7 +37,10 @@ export const searchDishes = async (params: {
   
   const response = await api<{ dishes: Dish[] }>(
     `/dishes/search?${queryParams.toString()}`,
-    { requiresAuth: true }
+    { 
+      method: "GET",
+      requiresAuth: true 
+    }
   );
   
   return response.dishes;
@@ -44,6 +48,7 @@ export const searchDishes = async (params: {
 
 export const getDishById = async (id: string) => {
   const response = await api<{ dish: Dish }>(`/dishes/${id}`, {
+    method: "GET",
     requiresAuth: true,
   });
   
@@ -62,6 +67,7 @@ export const addDish = async (dishData: Omit<Dish, "id" | "chef_id" | "created_a
 
 export const getChefDishes = async () => {
   const response = await api<{ dishes: Dish[] }>("/dishes/by-chef", {
+    method: "GET",
     requiresAuth: true,
   });
   

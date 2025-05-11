@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { getChefDishes, Dish, updateDish, deleteDish } from "@/services/dishes";
 import { getChefOrders, Order, updateOrderStatus } from "@/services/orders";
+import { getChefHostings, Hosting, createHosting } from "@/services/hosting";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,28 +15,36 @@ import {
   DialogDescription, 
   DialogFooter, 
   DialogHeader, 
-  DialogTitle 
+  DialogTitle, 
+  DialogTrigger 
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import AddDishForm from "@/components/AddDishForm";
+import AddHostingForm from "@/components/AddHostingForm";
 
 const ChefDashboard = () => {
   const [dishes, setDishes] = useState<Dish[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [hostings, setHostings] = useState<Hosting[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [isAddDishDialogOpen, setIsAddDishDialogOpen] = useState(false);
+  const [isAddHostingDialogOpen, setIsAddHostingDialogOpen] = useState(false);
   const { isChef } = useAuth();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [dishesData, ordersData] = await Promise.all([
+        const [dishesData, ordersData, hostingsData] = await Promise.all([
           getChefDishes(),
-          getChefOrders()
+          getChefOrders(),
+          getChefHostings()
         ]);
         setDishes(dishesData);
         setOrders(ordersData);
+        setHostings(hostingsData);
       } catch (error) {
         console.error("Failed to fetch chef data:", error);
         toast({
@@ -122,6 +131,28 @@ const ChefDashboard = () => {
       });
     }
   };
+  
+  const handleDishAdded = () => {
+    setIsAddDishDialogOpen(false);
+    
+    // Refresh dishes
+    getChefDishes().then(newDishes => {
+      setDishes(newDishes);
+    }).catch(error => {
+      console.error("Failed to refresh dishes:", error);
+    });
+  };
+  
+  const handleHostingAdded = () => {
+    setIsAddHostingDialogOpen(false);
+    
+    // Refresh hostings
+    getChefHostings().then(newHostings => {
+      setHostings(newHostings);
+    }).catch(error => {
+      console.error("Failed to refresh hostings:", error);
+    });
+  };
 
   if (!isChef) {
     return (
@@ -145,12 +176,28 @@ const ChefDashboard = () => {
           <TabsList className="mb-6">
             <TabsTrigger value="dishes">Your Dishes</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
+            <TabsTrigger value="hostings">Hostings</TabsTrigger>
           </TabsList>
           
           <TabsContent value="dishes">
             <div className="flex justify-between mb-6">
               <h2 className="text-xl font-semibold">Manage Your Dishes</h2>
-              <Button>Add New Dish</Button>
+              <Dialog open={isAddDishDialogOpen} onOpenChange={setIsAddDishDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button>Add New Dish</Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[550px]">
+                  <DialogHeader>
+                    <DialogTitle>Add a New Dish</DialogTitle>
+                    <DialogDescription>
+                      Enter the details of the dish you want to offer to customers
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="mt-4">
+                    <AddDishForm onSuccess={handleDishAdded} />
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
             
             {dishes.length === 0 ? (
@@ -159,7 +206,7 @@ const ChefDashboard = () => {
                 <p className="text-gray-600 mb-6">
                   Add your signature dishes to start receiving orders!
                 </p>
-                <Button>Add Your First Dish</Button>
+                <Button onClick={() => setIsAddDishDialogOpen(true)}>Add Your First Dish</Button>
               </div>
             ) : (
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -224,6 +271,82 @@ const ChefDashboard = () => {
                       setIsUpdateDialogOpen(true);
                     }}
                   />
+                ))}
+              </div>
+            )}
+          </TabsContent>
+          
+          <TabsContent value="hostings">
+            <div className="flex justify-between mb-6">
+              <h2 className="text-xl font-semibold">Manage Your Hostings</h2>
+              <Dialog open={isAddHostingDialogOpen} onOpenChange={setIsAddHostingDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button>Create New Hosting</Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[550px]">
+                  <DialogHeader>
+                    <DialogTitle>Create a New Hosting</DialogTitle>
+                    <DialogDescription>
+                      Set up a hosting event where customers can book your culinary experience
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="mt-4">
+                    <AddHostingForm onSuccess={handleHostingAdded} />
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+            
+            {hostings.length === 0 ? (
+              <div className="text-center py-12">
+                <h2 className="text-xl font-semibold mb-2">You haven't created any hostings yet.</h2>
+                <p className="text-gray-600 mb-6">
+                  Create a hosting to invite customers to your culinary experiences!
+                </p>
+                <Button onClick={() => setIsAddHostingDialogOpen(true)}>Create Your First Hosting</Button>
+              </div>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2">
+                {hostings.map((hosting) => (
+                  <Card key={hosting.id}>
+                    <CardHeader>
+                      <CardTitle>{hosting.title}</CardTitle>
+                      <CardDescription>Location: {hosting.location}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-2">
+                        <p className="text-sm">{hosting.description}</p>
+                        <div className="flex justify-between mt-4">
+                          <span className="font-medium">Price per guest:</span>
+                          <span>${hosting.price_per_guest.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="font-medium">Max guests:</span>
+                          <span>{hosting.max_guests}</span>
+                        </div>
+                        <div className="mt-4">
+                          <h4 className="font-medium mb-2">Available days:</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {hosting.available_days.map((day) => (
+                              <Badge key={day}>{day}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="mt-4">
+                          <h4 className="font-medium mb-2">Time slots:</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {hosting.time_slots.map((slot) => (
+                              <Badge key={slot} variant="outline">{slot}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="flex justify-end space-x-2">
+                      <Button variant="outline" size="sm">Edit</Button>
+                      <Button variant="destructive" size="sm">Delete</Button>
+                    </CardFooter>
+                  </Card>
                 ))}
               </div>
             )}

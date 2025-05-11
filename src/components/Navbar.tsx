@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
-import { Menu, X, Sun, Moon, LogOut, ShoppingBag, Home, Search, ChefHat } from 'lucide-react';
+import { Menu, X, Sun, Moon, LogOut, ShoppingBag, Home, Search, ChefHat, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -55,6 +55,9 @@ const Navbar = () => {
           </Link>
           <Link to="/browse" className="font-medium hover:text-idish-orange transition-colors dark:text-white dark:hover:text-idish-orange">
             Browse
+          </Link>
+          <Link to="/hostings" className="font-medium hover:text-idish-orange transition-colors dark:text-white dark:hover:text-idish-orange">
+            Hostings
           </Link>
           
           {!isLoggedIn ? (
@@ -180,6 +183,14 @@ const Navbar = () => {
           >
             <Search size={20} />
             <span>Browse</span>
+          </Link>
+          <Link 
+            to="/hostings" 
+            onClick={() => setMobileMenuOpen(false)}
+            className="flex items-center space-x-2 font-medium hover:text-idish-orange transition-colors dark:text-white dark:hover:text-idish-orange"
+          >
+            <Calendar size={20} />
+            <span>Hostings</span>
           </Link>
           
           {!isLoggedIn ? (

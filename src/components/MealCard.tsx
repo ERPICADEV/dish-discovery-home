@@ -1,6 +1,8 @@
 
 import { Link } from 'react-router-dom';
-import { cn } from '@/lib/utils';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 interface MealCardProps {
   id: number;
@@ -8,8 +10,10 @@ interface MealCardProps {
   image: string;
   chefName: string;
   price: number;
-  description: string;
-  location: string;
+  description?: string;
+  location?: string;
+  cuisine?: string;
+  dietary?: string[];
   className?: string;
 }
 
@@ -19,39 +23,58 @@ const MealCard = ({
   image,
   chefName,
   price,
-  description,
-  location,
-  className,
+  description = "",
+  location = "",
+  cuisine = "",
+  dietary = [],
+  className = ""
 }: MealCardProps) => {
   return (
-    <Link to={`/meal/${id}`} className={cn("block", className)}>
-      <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 h-full flex flex-col">
-        <div className="h-48 overflow-hidden">
-          <img
-            src={image}
-            alt={name}
-            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-          />
-        </div>
-        <div className="p-5 flex flex-col flex-grow">
-          <div className="flex justify-between items-start mb-2">
-            <h3 className="font-semibold text-lg text-gray-900 line-clamp-1">{name}</h3>
-            <span className="bg-idish-yellow px-3 py-1 rounded-full text-sm font-medium">
-              ${price.toFixed(2)}
-            </span>
-          </div>
-          <p className="text-sm text-gray-500 mb-2">By {chefName}</p>
-          <p className="text-gray-700 text-sm mb-4 line-clamp-2 flex-grow">{description}</p>
-          <div className="flex items-center text-gray-500 text-xs">
-            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <span>{location}</span>
-          </div>
-        </div>
+    <Card className={`overflow-hidden transition-all hover:-translate-y-1 hover:shadow-md ${className}`}>
+      <div className="relative">
+        <img
+          src={image}
+          alt={name}
+          className="h-48 w-full object-cover"
+        />
+        {cuisine && (
+          <Badge className="absolute top-2 right-2">
+            {cuisine}
+          </Badge>
+        )}
       </div>
-    </Link>
+      <CardContent className="p-4">
+        <h3 className="font-semibold text-lg line-clamp-1">{name}</h3>
+        <p className="text-gray-600 text-sm mb-2 dark:text-gray-400">By {chefName}</p>
+        
+        {description && (
+          <p className="text-sm line-clamp-2 mb-2">{description}</p>
+        )}
+        
+        <div className="flex items-center justify-between mt-2">
+          <span className="font-bold text-lg">${price.toFixed(2)}</span>
+          
+          {location && (
+            <span className="text-xs text-gray-500 dark:text-gray-400">{location}</span>
+          )}
+        </div>
+        
+        {dietary && dietary.length > 0 && (
+          <div className="flex flex-wrap gap-1 mt-2">
+            {dietary.map((tag, index) => (
+              <Badge key={index} variant="outline" className="text-xs">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )}
+      </CardContent>
+      <CardFooter className="border-t p-4">
+        <Link to={`/order/${id}`} className="w-full">
+          <Button className="w-full">Order Now</Button>
+        </Link>
+      </CardFooter>
+    </Card>
   );
 };
 

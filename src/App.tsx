@@ -14,6 +14,8 @@ import ChefSignUp from "./pages/ChefSignUp";
 import ChefProfile from "./pages/ChefProfile";
 import ChefDashboard from "./pages/ChefDashboard";
 import Orders from "./pages/Orders";
+import Hostings from "./pages/Hostings";
+import OrderDish from "./pages/OrderDish";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
@@ -33,9 +35,18 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/browse" element={<Browse />} />
+              <Route path="/hostings" element={<Hostings />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
               <Route path="/chef-signup" element={<ChefSignUp />} />
+              <Route 
+                path="/order/:dishId" 
+                element={
+                  <ProtectedRoute requiresCustomer={true}>
+                    <OrderDish />
+                  </ProtectedRoute>
+                } 
+              />
               <Route 
                 path="/chef/:chefId" 
                 element={

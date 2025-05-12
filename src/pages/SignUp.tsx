@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -22,20 +21,19 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { User } from "lucide-react";
 
-const customerSignupSchema = z.object({
+// Define the base schema with common fields
+const baseSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   confirmPassword: z.string().min(6, "Password must be at least 6 characters"),
-  role: z.literal("customer"),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
 });
 
-const chefSignupSchema = z.object({
-  email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: z.string().min(6, "Password must be at least 6 characters"),
+// Define separate schemas for customer and chef roles
+const customerSchema = baseSchema.extend({
+  role: z.literal("customer"),
+});
+
+const chefSchema = baseSchema.extend({
   role: z.literal("chef"),
   fullName: z.string().min(2, "Please enter your full name"),
   phone: z.string().optional(),
@@ -43,15 +41,16 @@ const chefSignupSchema = z.object({
   about: z.string().min(10, "Please tell us a bit about yourself (at least 10 characters)"),
   experience: z.string({ required_error: "Please select your experience level" }),
   profileImage: z.string().optional(),
-}).refine((data) => data.password === data.confirmPassword, {
+});
+
+// Use discriminated union based on role
+const signupSchema = z.discriminatedUnion("role", [
+  customerSchema,
+  chefSchema
+]).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
 });
-
-const signupSchema = z.discriminatedUnion("role", [
-  customerSignupSchema,
-  chefSignupSchema
-]);
 
 type SignUpFormData = z.infer<typeof signupSchema>;
 
@@ -107,33 +106,23 @@ const SignUp = () => {
   const onSubmit = async (data: SignUpFormData) => {
     setIsLoading(true);
     try {
-      // Extract the relevant data based on role
-      const signupData = data.role === "customer" 
-        ? { 
-            email: data.email, 
-            password: data.password, 
-            role: data.role 
-          }
-        : { 
-            email: data.email,
-            password: data.password,
-            role: data.role,
+      if (data.role === "chef") {
+        await signup(
+          data.email, 
+          data.password, 
+          data.role,
+          {
             full_name: data.fullName,
             phone: data.phone || "",
             location: data.location,
             about: data.about,
             experience: data.experience,
             profile_image: data.profileImage || ""
-          };
-      
-      await signup(data.email, data.password, data.role, data.role === "chef" ? {
-        full_name: data.fullName,
-        phone: data.phone || "",
-        location: data.location,
-        about: data.about,
-        experience: data.experience,
-        profile_image: data.profileImage || ""
-      } : undefined);
+          }
+        );
+      } else {
+        await signup(data.email, data.password, data.role);
+      }
       
       toast({
         title: "Account created",

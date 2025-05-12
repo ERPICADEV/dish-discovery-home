@@ -21,6 +21,13 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Schema for booking form
 const bookingSchema = z.object({
@@ -39,7 +46,7 @@ const Hostings = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedHosting, setSelectedHosting] = useState<Hosting | null>(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isLoggedIn } = useAuth();
 
   const form = useForm<BookingFormData>({
     resolver: zodResolver(bookingSchema),
@@ -92,9 +99,8 @@ const Hostings = () => {
     if (!selectedHosting) return;
     
     try {
-      // In a real application, we would call a booking API here
-      // For now, we'll just show a success toast
-      // await bookHosting(selectedHosting.id, data);
+      // Make the actual API call to book the hosting
+      await bookHosting(selectedHosting.id, data);
 
       toast({
         title: "Booking Confirmed!",
@@ -115,7 +121,7 @@ const Hostings = () => {
   };
 
   const handleBookNowClick = (hosting: Hosting) => {
-    if (!isAuthenticated) {
+    if (!isLoggedIn) {
       toast({
         title: "Login Required",
         description: "Please log in to book a hosting.",

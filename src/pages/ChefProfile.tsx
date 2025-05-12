@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -7,7 +6,7 @@ import MealCard from '@/components/MealCard';
 
 // Sample data for a chef
 const chefData = {
-  id: 1,
+  id: "1",  // Changed from number to string
   name: "Maria Rossi",
   location: "Brooklyn, NY",
   profileImage: "https://images.unsplash.com/photo-1583394838336-acd977736f90?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=384&q=80",
@@ -18,7 +17,7 @@ const chefData = {
   yearsExperience: 12,
   meals: [
     {
-      id: 101,
+      id: "101",  // Changed from number to string
       name: "Homemade Lasagna",
       image: "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1335&q=80",
       chefName: "Maria Rossi",
@@ -27,7 +26,7 @@ const chefData = {
       location: "Brooklyn, NY"
     },
     {
-      id: 102,
+      id: "102",  // Changed from number to string
       name: "Tuscan Ribollita Soup",
       image: "https://images.unsplash.com/photo-1547592180-85f173990554?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
       chefName: "Maria Rossi",
@@ -36,7 +35,7 @@ const chefData = {
       location: "Brooklyn, NY"
     },
     {
-      id: 103,
+      id: "103",  // Changed from number to string
       name: "Tiramisu",
       image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1335&q=80",
       chefName: "Maria Rossi",
@@ -47,21 +46,21 @@ const chefData = {
   ],
   reviews: [
     {
-      id: 201,
+      id: "201",  // Changed from number to string
       user: "John D.",
       rating: 5,
       date: "2023-08-15",
       comment: "Maria's lasagna is incredible! Authentic Italian flavors that transported me straight to Tuscany. Will definitely order again!"
     },
     {
-      id: 202,
+      id: "202",  // Changed from number to string
       user: "Sarah M.",
       rating: 5,
       date: "2023-07-23",
       comment: "The tiramisu was perfect - not too sweet and had just the right amount of coffee flavor. Maria was also very friendly when I picked up my order."
     },
     {
-      id: 203,
+      id: "203",  // Changed from number to string
       user: "Michael P.",
       rating: 4,
       date: "2023-06-10",

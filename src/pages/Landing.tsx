@@ -1,4 +1,3 @@
-
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 import TestimonialCard from '@/components/TestimonialCard';
@@ -9,7 +8,7 @@ import { useEffect } from 'react';
 // Sample meals data
 const featuredMeals = [
   {
-    id: 1,
+    id: "1",  // Changed from number to string
     name: "Homemade Lasagna",
     image: "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1335&q=80",
     chefName: "Maria Rossi",
@@ -18,7 +17,7 @@ const featuredMeals = [
     location: "Brooklyn, NY"
   },
   {
-    id: 2,
+    id: "2",  // Changed from number to string
     name: "Spicy Thai Curry",
     image: "https://images.unsplash.com/photo-1455619452474-d2be8b1e70cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
     chefName: "Anong Suk",
@@ -27,7 +26,7 @@ const featuredMeals = [
     location: "Queens, NY"
   },
   {
-    id: 3,
+    id: "3",  // Changed from number to string
     name: "Southern Fried Chicken",
     image: "https://images.unsplash.com/photo-1562967914-608f82629710?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1473&q=80",
     chefName: "James Brown",

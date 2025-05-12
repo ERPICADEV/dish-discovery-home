@@ -6,6 +6,12 @@ export interface User {
   email: string;
   user_metadata: {
     role: "chef" | "customer";
+    full_name?: string;
+    phone?: string;
+    location?: string;
+    about?: string;
+    experience?: string;
+    profile_image?: string;
   };
 }
 
@@ -21,10 +27,29 @@ interface AuthResponse {
   message?: string;
 }
 
-export const signup = async (email: string, password: string, role: "chef" | "customer") => {
+interface ChefMetadata {
+  full_name: string;
+  phone: string;
+  location: string;
+  about: string;
+  experience: string;
+  profile_image: string;
+}
+
+export const signup = async (
+  email: string, 
+  password: string, 
+  role: "chef" | "customer",
+  chefMetadata?: ChefMetadata
+) => {
   const response = await api<AuthResponse>("/auth/signup", {
     method: "POST",
-    body: JSON.stringify({ email, password, role }),
+    body: JSON.stringify({ 
+      email, 
+      password, 
+      role,
+      ...(chefMetadata && role === "chef" ? chefMetadata : {})
+    }),
   });
 
   return response;

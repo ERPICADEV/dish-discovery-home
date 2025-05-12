@@ -42,10 +42,18 @@ const OrderDish = () => {
     resolver: zodResolver(orderFormSchema),
     defaultValues: {
       quantity: 1,
-      delivery_address: user?.user_metadata?.address || "",
+      delivery_address: "",  // Initialize with empty string instead of trying to access user metadata
       special_instructions: "",
     },
   });
+
+  // Update delivery address if user metadata is available
+  useEffect(() => {
+    if (user?.user_metadata) {
+      const userAddress = user.user_metadata.address || "";
+      form.setValue("delivery_address", userAddress);
+    }
+  }, [user, form]);
 
   useEffect(() => {
     const fetchDish = async () => {

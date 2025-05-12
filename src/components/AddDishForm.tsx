@@ -78,7 +78,15 @@ const AddDishForm = ({ onSuccess }: AddDishFormProps) => {
   const onSubmit = async (data: DishFormValues) => {
     try {
       setIsSubmitting(true);
-      await addDish(data);
+      // Ensure all required fields are present with proper types
+      await addDish({
+        title: data.title,
+        description: data.description,
+        price: data.price,
+        image_url: data.image_url,
+        cuisine_type: data.cuisine_type,
+        available: data.available,
+      });
       toast({
         title: "Success",
         description: "Dish added successfully!",

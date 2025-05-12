@@ -71,7 +71,16 @@ const AddHostingForm = ({ onSuccess }: AddHostingFormProps) => {
   const onSubmit = async (data: HostingFormValues) => {
     try {
       setIsSubmitting(true);
-      await createHosting(data);
+      // Ensure all required fields are present with proper types
+      await createHosting({
+        title: data.title,
+        description: data.description || "",
+        location: data.location,
+        available_days: data.available_days,
+        time_slots: data.time_slots,
+        max_guests: data.max_guests,
+        price_per_guest: data.price_per_guest,
+      });
       toast({
         title: "Success",
         description: "Hosting created successfully!",

@@ -100,7 +100,15 @@ const Hostings = () => {
     
     try {
       // Make the actual API call to book the hosting
-      await bookHosting(selectedHosting.id, data);
+      // Ensure all required fields from BookingData interface are provided
+      const bookingData = {
+        date: data.date,
+        timeSlot: data.timeSlot,
+        guestCount: data.guestCount,
+        specialRequests: data.specialRequests || ""
+      };
+      
+      await bookHosting(selectedHosting.id, bookingData);
 
       toast({
         title: "Booking Confirmed!",

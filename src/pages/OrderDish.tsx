@@ -50,7 +50,8 @@ const OrderDish = () => {
   // Update delivery address if user metadata is available
   useEffect(() => {
     if (user?.user_metadata) {
-      const userAddress = user.user_metadata.address || "";
+      // TypeScript doesn't know about address property, so we access it safely
+      const userAddress = (user.user_metadata as any).address || "";
       form.setValue("delivery_address", userAddress);
     }
   }, [user, form]);

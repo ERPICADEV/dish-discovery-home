@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 interface MealCardProps {
-  id: string; // Changed from number to string to match the API's dish ID type
+  id: string;
   name: string;
   image: string;
   chefName: string;
@@ -15,6 +15,7 @@ interface MealCardProps {
   cuisine?: string;
   dietary?: string[];
   className?: string;
+  chefId?: string; // Added chef ID for linking to chef profile
 }
 
 const MealCard = ({
@@ -27,7 +28,8 @@ const MealCard = ({
   location = "",
   cuisine = "",
   dietary = [],
-  className = ""
+  className = "",
+  chefId
 }: MealCardProps) => {
   return (
     <Card className={`overflow-hidden transition-all hover:-translate-y-1 hover:shadow-md ${className}`}>
@@ -45,7 +47,15 @@ const MealCard = ({
       </div>
       <CardContent className="p-4">
         <h3 className="font-semibold text-lg line-clamp-1">{name}</h3>
-        <p className="text-gray-600 text-sm mb-2 dark:text-gray-400">By {chefName}</p>
+        
+        {/* Link to chef profile if we have a chefId */}
+        {chefId ? (
+          <Link to={`/chef/${chefId}`} className="text-gray-600 text-sm mb-2 dark:text-gray-400 hover:underline">
+            By {chefName}
+          </Link>
+        ) : (
+          <p className="text-gray-600 text-sm mb-2 dark:text-gray-400">By {chefName}</p>
+        )}
         
         {description && (
           <p className="text-sm line-clamp-2 mb-2">{description}</p>
@@ -69,10 +79,17 @@ const MealCard = ({
           </div>
         )}
       </CardContent>
-      <CardFooter className="border-t p-4">
-        <Link to={`/order/${id}`} className="w-full">
+      <CardFooter className="border-t p-4 flex justify-between">
+        <Link to={`/order/${id}`} className="flex-1 mr-2">
           <Button className="w-full">Order Now</Button>
         </Link>
+        
+        {/* Add "View Chef" button */}
+        {chefId && (
+          <Link to={`/chef/${chefId}`} className="flex-1 ml-2">
+            <Button variant="outline" className="w-full">Chef Details</Button>
+          </Link>
+        )}
       </CardFooter>
     </Card>
   );

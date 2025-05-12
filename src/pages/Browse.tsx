@@ -21,6 +21,9 @@ const Browse = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [cuisineOptions, setCuisineOptions] = useState<string[]>(["All"]);
   
+  // New state for chefs data
+  const [chefsMap, setChefsMap] = useState<Record<string, string>>({});
+  
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchDishes();
@@ -36,6 +39,20 @@ const Browse = () => {
       // Extract unique cuisine types
       const cuisines = ["All", ...new Set(dishes.map(dish => dish.cuisine_type))];
       setCuisineOptions(cuisines);
+      
+      // Create a map of chef IDs to names
+      // In a real application, this would fetch chef data from an API
+      // For now we'll use placeholder names based on the chef_id
+      const chefNames: Record<string, string> = {};
+      dishes.forEach(dish => {
+        if (!chefNames[dish.chef_id]) {
+          // Generate a chef name from ID for demonstration
+          // In a real app, you would fetch this from the database
+          const shortId = dish.chef_id.substring(0, 6);
+          chefNames[dish.chef_id] = `Chef ${shortId}`;
+        }
+      });
+      setChefsMap(chefNames);
     } catch (error) {
       console.error("Error fetching dishes:", error);
       toast({
@@ -261,16 +278,17 @@ const Browse = () => {
                   filteredMeals.map(dish => (
                     <MealCard 
                       key={dish.id} 
-                      id={dish.id} // Pass ID as string directly from the API
+                      id={dish.id} 
                       name={dish.title}
                       image={dish.image_url || "/placeholder.svg"}
-                      chefName={`Chef #${dish.chef_id.substring(0, 6)}`}
+                      chefName={chefsMap[dish.chef_id] || `Chef #${dish.chef_id.substring(0, 6)}`}
                       price={dish.price}
                       description={dish.description}
                       location="Local Area"
                       cuisine={dish.cuisine_type}
                       dietary={[]}
                       className="animate-fade-in" 
+                      chefId={dish.chef_id} // Pass chef ID for linking to chef profile
                     />
                   ))
                 ) : (

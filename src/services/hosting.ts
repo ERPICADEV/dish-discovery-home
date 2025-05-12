@@ -24,6 +24,13 @@ export interface CreateHostingData {
   price_per_guest: number;
 }
 
+export interface BookingData {
+  date: string;
+  timeSlot: string;
+  guestCount: number;
+  specialRequests?: string;
+}
+
 // Chef creates a new hosting
 export const createHosting = async (hostingData: CreateHostingData) => {
   const response = await api<{ message: string; hosting: Hosting }>("/hosting/create", {
@@ -53,4 +60,35 @@ export const getAllHostings = async () => {
   });
   
   return response.hostings;
+};
+
+// Book a hosting
+export const bookHosting = async (hostingId: string, bookingData: BookingData) => {
+  const response = await api<{ message: string; booking: any }>(`/hosting/book/${hostingId}`, {
+    method: "POST",
+    body: JSON.stringify(bookingData),
+    requiresAuth: true,
+  });
+  
+  return response;
+};
+
+// Get bookings for a customer
+export const getCustomerBookings = async () => {
+  const response = await api<{ bookings: any[] }>("/hosting/bookings/customer", {
+    method: "GET",
+    requiresAuth: true,
+  });
+  
+  return response.bookings;
+};
+
+// Get bookings for a chef
+export const getChefBookings = async () => {
+  const response = await api<{ bookings: any[] }>("/hosting/bookings/chef", {
+    method: "GET",
+    requiresAuth: true,
+  });
+  
+  return response.bookings;
 };

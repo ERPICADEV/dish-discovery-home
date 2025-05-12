@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 interface MealCardProps {
-  id: number;
+  id: string; // Changed from number to string to match the API's dish ID type
   name: string;
   image: string;
   chefName: string;

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -262,7 +261,7 @@ const Browse = () => {
                   filteredMeals.map(dish => (
                     <MealCard 
                       key={dish.id} 
-                      id={Number(dish.id)}
+                      id={dish.id} // Pass ID as string directly from the API
                       name={dish.title}
                       image={dish.image_url || "/placeholder.svg"}
                       chefName={`Chef #${dish.chef_id.substring(0, 6)}`}

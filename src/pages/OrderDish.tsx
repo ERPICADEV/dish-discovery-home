@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getDishById, Dish } from "@/services/dishes";
@@ -50,15 +49,25 @@ const OrderDish = () => {
   // Update delivery address if user metadata is available
   useEffect(() => {
     if (user?.user_metadata) {
-      // TypeScript doesn't know about address property, so we access it safely
-      const userAddress = (user.user_metadata as any).address || "";
+      // Access address safely with optional chaining
+      const userMetadata = user.user_metadata as Record<string, any>;
+      const userAddress = userMetadata?.address || "";
       form.setValue("delivery_address", userAddress);
     }
   }, [user, form]);
 
   useEffect(() => {
     const fetchDish = async () => {
-      if (!dishId) return;
+      if (!dishId) {
+        // Handle missing dishId by redirecting
+        toast({
+          title: "Error",
+          description: "Invalid dish ID.",
+          variant: "destructive",
+        });
+        navigate("/browse");
+        return;
+      }
       
       try {
         setIsLoading(true);
@@ -77,7 +86,7 @@ const OrderDish = () => {
     };
 
     fetchDish();
-  }, [dishId]);
+  }, [dishId, navigate]);
 
   const onSubmit = async (data: OrderFormValues) => {
     if (!dish) return;

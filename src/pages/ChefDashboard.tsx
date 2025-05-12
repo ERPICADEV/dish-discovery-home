@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { getChefDishes, Dish, updateDish, deleteDish } from "@/services/dishes";
 import { getChefOrders, Order, updateOrderStatus } from "@/services/orders";
@@ -186,7 +185,7 @@ const ChefDashboard = () => {
                 <DialogTrigger asChild>
                   <Button>Add New Dish</Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[550px]">
+                <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Add a New Dish</DialogTitle>
                     <DialogDescription>
@@ -283,7 +282,7 @@ const ChefDashboard = () => {
                 <DialogTrigger asChild>
                   <Button>Create New Hosting</Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-[550px]">
+                <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
                     <DialogTitle>Create a New Hosting</DialogTitle>
                     <DialogDescription>

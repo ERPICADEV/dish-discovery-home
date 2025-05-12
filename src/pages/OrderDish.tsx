@@ -42,7 +42,7 @@ const OrderDish = () => {
     resolver: zodResolver(orderFormSchema),
     defaultValues: {
       quantity: 1,
-      delivery_address: "",  // Initialize with empty string instead of trying to access user metadata
+      delivery_address: "",
       special_instructions: "",
     },
   });

@@ -1,8 +1,7 @@
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
-import { Menu, X, Sun, Moon, LogOut, ShoppingBag, Home, Search, ChefHat, Calendar } from 'lucide-react';
+import { Menu, X, Sun, Moon, LogOut, ShoppingBag, Home, Search, ChefHat, Calendar, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -251,6 +250,15 @@ const Navbar = () => {
                   <span>My Orders</span>
                 </Link>
               )}
+              
+              <Link 
+                to="/profile" 
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center space-x-2 font-medium hover:text-idish-orange transition-colors dark:text-white dark:hover:text-idish-orange"
+              >
+                <User size={20} />
+                <span>Profile</span>
+              </Link>
               
               <Button 
                 variant="destructive" 

@@ -1,4 +1,3 @@
-
 import { api } from "./api";
 
 export interface Hosting {
@@ -25,10 +24,7 @@ export interface CreateHostingData {
 }
 
 export interface BookingData {
-  date: string;
-  timeSlot: string;
-  guestCount: number;
-  specialRequests?: string;
+  seats: number;
 }
 
 // Chef creates a new hosting

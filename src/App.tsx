@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,15 +9,16 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Landing from "./pages/Landing";
 import Browse from "./pages/Browse";
-import ChefSignUp from "./pages/ChefSignUp";
-import ChefProfile from "./pages/ChefProfile";
-import ChefDashboard from "./pages/ChefDashboard";
-import Orders from "./pages/Orders";
-import Hostings from "./pages/Hostings";
-import OrderDish from "./pages/OrderDish";
-import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
+import ChefSignUp from "./pages/ChefSignUp";
+import ChefDashboard from "./pages/ChefDashboard";
+import Orders from "./pages/Orders";
+import NotFound from "./pages/NotFound";
+import Hostings from "./pages/Hostings";
+import OrderDish from "./pages/OrderDish";
+import ChefProfile from "./pages/ChefProfile";
+import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -38,6 +38,36 @@ const App = () => (
               <Route path="/hostings" element={<Hostings />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
+              <Route path="/chef-signup" element={<ChefSignUp />} />
+              <Route 
+                path="/order/:dishId" 
+                element={
+                  <ProtectedRoute requiresCustomer={true}>
+                    <OrderDish />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/chef/:chefId" 
+                element={
+                  <ProtectedRoute>
+                    <ChefProfile />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/dashboard" 
+                element={
+                  <ProtectedRoute requiresChef={true}>
+                    <ChefDashboard />
+                  </ProtectedRoute>
+                } 
+              />
               <Route path="/chef-signup" element={<ChefSignUp />} />
               <Route 
                 path="/order/:dishId" 

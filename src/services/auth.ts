@@ -6,7 +6,7 @@ export interface User {
   email: string;
   user_metadata: {
     role: "chef" | "customer";
-    full_name?: string;
+    name?: string;
     phone?: string;
     location?: string;
     about?: string;
@@ -28,7 +28,7 @@ interface AuthResponse {
 }
 
 interface ChefMetadata {
-  full_name: string;
+  name: string;
   phone: string;
   location: string;
   about: string;

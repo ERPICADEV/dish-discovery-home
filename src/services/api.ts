@@ -1,4 +1,3 @@
-
 import { toast } from "@/hooks/use-toast";
 
 const API_BASE_URL = "https://build-idish-backend-production.up.railway.app";
@@ -22,7 +21,6 @@ export const api = async <T>(
       ...options.headers,
     };
 
-    // Add auth token if required and available
     if (requiresAuth) {
       const token = localStorage.getItem("token");
       if (!token) {

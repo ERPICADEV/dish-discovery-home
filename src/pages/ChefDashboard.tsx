@@ -21,6 +21,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import AddDishForm from "@/components/AddDishForm";
 import AddHostingForm from "@/components/AddHostingForm";
+import EditDishForm from "@/components/EditDishForm";
 
 const ChefDashboard = () => {
   const [dishes, setDishes] = useState<Dish[]>([]);
@@ -31,6 +32,8 @@ const ChefDashboard = () => {
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [isAddDishDialogOpen, setIsAddDishDialogOpen] = useState(false);
   const [isAddHostingDialogOpen, setIsAddHostingDialogOpen] = useState(false);
+  const [editingDish, setEditingDish] = useState<Dish | null>(null);
+  const [isEditDishDialogOpen, setIsEditDishDialogOpen] = useState(false);
   const { isChef } = useAuth();
 
   useEffect(() => {
@@ -153,6 +156,18 @@ const ChefDashboard = () => {
     });
   };
 
+  const handleDishEdited = () => {
+    setIsEditDishDialogOpen(false);
+    setEditingDish(null);
+    
+    // Refresh dishes
+    getChefDishes().then(newDishes => {
+      setDishes(newDishes);
+    }).catch(error => {
+      console.error("Failed to refresh dishes:", error);
+    });
+  };
+
   if (!isChef) {
     return (
       <div className="container-custom py-16">
@@ -235,7 +250,16 @@ const ChefDashboard = () => {
                         <Label>{dish.available ? "Available" : "Unavailable"}</Label>
                       </div>
                       <div className="space-x-2">
-                        <Button variant="outline" size="sm">Edit</Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            setEditingDish(dish);
+                            setIsEditDishDialogOpen(true);
+                          }}
+                        >
+                          Edit
+                        </Button>
                         <Button 
                           variant="destructive" 
                           size="sm"
@@ -427,6 +451,29 @@ const ChefDashboard = () => {
               Close
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isEditDishDialogOpen} onOpenChange={setIsEditDishDialogOpen}>
+        <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Dish</DialogTitle>
+            <DialogDescription>
+              Update the details of your dish
+            </DialogDescription>
+          </DialogHeader>
+          {editingDish && (
+            <div className="mt-4">
+              <EditDishForm 
+                dish={editingDish} 
+                onSuccess={handleDishEdited}
+                onCancel={() => {
+                  setIsEditDishDialogOpen(false);
+                  setEditingDish(null);
+                }}
+              />
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

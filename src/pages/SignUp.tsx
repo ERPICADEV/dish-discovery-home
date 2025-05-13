@@ -112,7 +112,7 @@ const SignUp = () => {
           data.password, 
           data.role,
           {
-            full_name: data.fullName,
+            name: data.fullName,
             phone: data.phone || "",
             location: data.location,
             about: data.about,

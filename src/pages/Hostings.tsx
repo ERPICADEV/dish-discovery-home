@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Hosting, bookHosting } from "@/services/hosting";
 import { toast } from "@/hooks/use-toast";
@@ -13,13 +12,22 @@ const Hostings = () => {
   const { filteredHostings, isLoading, searchQuery, setSearchQuery } = useHostings();
   const [selectedHosting, setSelectedHosting] = useState<Hosting | null>(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, isCustomer } = useAuth();
 
   const handleBookNowClick = (hosting: Hosting) => {
-    if (!isLoggedIn) {
+    console.log('=== Book Now Click Debug ===');
+    console.log('1. User auth state:', {
+      isLoggedIn,
+      isCustomer,
+      hasToken: !!localStorage.getItem("token")
+    });
+    console.log('2. Selected hosting:', hosting);
+
+    if (!isLoggedIn || !isCustomer) {
+      console.log('3. Booking blocked - User not logged in or not a customer');
       toast({
         title: "Login Required",
-        description: "Please log in to book a hosting.",
+        description: "Please log in as a customer to book a hosting.",
         variant: "destructive",
       });
       return;
@@ -30,22 +38,18 @@ const Hostings = () => {
   };
 
   const onBookingSubmit = async (data: BookingFormData) => {
-    if (!selectedHosting) return;
+    if (!selectedHosting) {
+      return;
+    }
     
     try {
-      // Ensure all required fields from BookingData interface are provided
-      const bookingData = {
-        date: data.date,
-        timeSlot: data.timeSlot,
-        guestCount: data.guestCount,
-        specialRequests: data.specialRequests || ""
-      };
-      
-      await bookHosting(selectedHosting.id, bookingData);
+      await bookHosting(selectedHosting.id, {
+        seats: data.seats
+      });
 
       toast({
         title: "Booking Confirmed!",
-        description: `You have successfully booked "${selectedHosting.title}" for ${data.date} at ${data.timeSlot} with ${data.guestCount} guests.`,
+        description: `You have successfully booked ${data.seats} seat(s) for "${selectedHosting.title}".`,
       });
       
       setIsBookingOpen(false);

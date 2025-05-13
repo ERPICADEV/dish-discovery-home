@@ -52,3 +52,15 @@ export const api = async <T>(
     throw error;
   }
 };
+
+export const getImageUrl = (path: string | null | undefined): string => {
+  if (!path) return "/placeholder.svg";
+  
+  // If the path is already a full URL, return it
+  if (path.startsWith("http://") || path.startsWith("https://")) {
+    return path;
+  }
+  
+  // Otherwise, join with the API base URL
+  return `${API_BASE_URL}${path}`;
+};

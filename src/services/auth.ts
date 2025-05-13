@@ -80,6 +80,20 @@ export const getProfile = async () => {
     requiresAuth: true,
   });
 
+  // Update the stored user data with the latest from the server
+  if (response.user) {
+    localStorage.setItem("user", JSON.stringify(response.user));
+  }
+
+  return response.user;
+};
+
+export const getChefProfile = async (chefId: string) => {
+  const response = await api<{ user: User }>(`/users/${chefId}`, {
+    method: "GET",
+    requiresAuth: true,
+  });
+
   return response.user;
 };
 

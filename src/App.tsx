@@ -17,9 +17,8 @@ import Orders from "./pages/Orders";
 import NotFound from "./pages/NotFound";
 import Hostings from "./pages/Hostings";
 import OrderDish from "./pages/OrderDish";
-import NotFound from "./pages/NotFound";
-import Login from "./pages/Login";
-import SignUp from "./pages/SignUp";
+import ChefProfile from "./pages/ChefProfile";
+import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
@@ -91,14 +90,6 @@ const App = () => (
                 element={
                   <ProtectedRoute requiresChef={true}>
                     <ChefDashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/profile" 
-                element={
-                  <ProtectedRoute requiresChef={true}>
-                    <MyProfile />
                   </ProtectedRoute>
                 } 
               />

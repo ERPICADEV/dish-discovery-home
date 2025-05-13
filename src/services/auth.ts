@@ -15,19 +15,6 @@ export interface User {
   };
 }
 
-export interface ChefProfile {
-  id: string;
-  name: string;
-  location: string;
-  about: string;
-  experience: string;
-  image_url: string;
-  phone: string;
-  cuisine_specialty?: string;
-  rating?: number;
-  review_count?: number;
-}
-
 export interface Session {
   access_token: string;
   refresh_token: string;
@@ -38,11 +25,6 @@ interface AuthResponse {
   user: User;
   session?: Session;
   message?: string;
-}
-
-interface ChefProfileResponse {
-  user: User;
-  chef_profile?: ChefProfile;
 }
 
 interface ChefMetadata {
@@ -90,24 +72,15 @@ export const login = async (email: string, password: string) => {
 export const logout = () => {
   localStorage.removeItem("token");
   localStorage.removeItem("user");
-  localStorage.removeItem("chef_profile");
 };
 
 export const getProfile = async () => {
-  const response = await api<ChefProfileResponse>("/auth/profile", {
+  const response = await api<{ user: User }>("/auth/profile", {
     method: "GET",
     requiresAuth: true,
   });
 
-  // If there's a chef_profile, store it in localStorage
-  if (response.chef_profile) {
-    localStorage.setItem("chef_profile", JSON.stringify(response.chef_profile));
-  }
-
-  return {
-    user: response.user,
-    chefProfile: response.chef_profile
-  };
+  return response.user;
 };
 
 export const getCurrentUser = (): User | null => {
@@ -116,17 +89,6 @@ export const getCurrentUser = (): User | null => {
 
   try {
     return JSON.parse(userStr) as User;
-  } catch (e) {
-    return null;
-  }
-};
-
-export const getStoredChefProfile = (): ChefProfile | null => {
-  const profileStr = localStorage.getItem("chef_profile");
-  if (!profileStr) return null;
-
-  try {
-    return JSON.parse(profileStr) as ChefProfile;
   } catch (e) {
     return null;
   }

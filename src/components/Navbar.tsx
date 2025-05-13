@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
@@ -106,10 +107,16 @@ const Navbar = () => {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   {isChef && (
-                    <DropdownMenuItem onClick={() => navigate("/dashboard")}>
-                      <ChefHat className="mr-2 h-4 w-4" />
-                      <span>Dashboard</span>
-                    </DropdownMenuItem>
+                    <>
+                      <DropdownMenuItem onClick={() => navigate("/dashboard")}>
+                        <ChefHat className="mr-2 h-4 w-4" />
+                        <span>Dashboard</span>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate("/profile")}>
+                        <User className="mr-2 h-4 w-4" />
+                        <span>My Profile</span>
+                      </DropdownMenuItem>
+                    </>
                   )}
                   {isCustomer && (
                     <DropdownMenuItem onClick={() => navigate("/orders")}>
@@ -230,14 +237,24 @@ const Navbar = () => {
               </div>
               
               {isChef && (
-                <Link 
-                  to="/dashboard" 
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center space-x-2 font-medium hover:text-idish-orange transition-colors dark:text-white dark:hover:text-idish-orange"
-                >
-                  <ChefHat size={20} />
-                  <span>Chef Dashboard</span>
-                </Link>
+                <>
+                  <Link 
+                    to="/dashboard" 
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-2 font-medium hover:text-idish-orange transition-colors dark:text-white dark:hover:text-idish-orange"
+                  >
+                    <ChefHat size={20} />
+                    <span>Chef Dashboard</span>
+                  </Link>
+                  <Link 
+                    to="/profile" 
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-2 font-medium hover:text-idish-orange transition-colors dark:text-white dark:hover:text-idish-orange"
+                  >
+                    <User size={20} />
+                    <span>My Profile</span>
+                  </Link>
+                </>
               )}
               
               {isCustomer && (
@@ -250,15 +267,6 @@ const Navbar = () => {
                   <span>My Orders</span>
                 </Link>
               )}
-              
-              <Link 
-                to="/profile" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center space-x-2 font-medium hover:text-idish-orange transition-colors dark:text-white dark:hover:text-idish-orange"
-              >
-                <User size={20} />
-                <span>Profile</span>
-              </Link>
               
               <Button 
                 variant="destructive" 

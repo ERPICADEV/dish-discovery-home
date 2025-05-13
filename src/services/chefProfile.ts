@@ -1,4 +1,3 @@
-
 import { api } from "./api";
 import { ChefProfile } from "@/types/chef";
 import { User } from "./auth";
@@ -6,8 +5,8 @@ import { User } from "./auth";
 // Fetch chef data from API
 export const fetchChefData = async (chefId: string): Promise<ChefProfile> => {
   try {
-    // Get chef's user profile from the API
-    const response = await api<{ user: User }>(`/users/${chefId}`, {
+    // Get chef's profile from the API using the users endpoint
+    const response = await api<{ user: User }>(`/auth/users/${chefId}`, {
       method: "GET",
       requiresAuth: true,
     });
@@ -15,7 +14,6 @@ export const fetchChefData = async (chefId: string): Promise<ChefProfile> => {
     const chefData = response.user;
     
     // For now, we'll use sample meals and reviews since we don't have APIs for those
-    // In a real implementation, you'd fetch these from appropriate endpoints
     const sampleMeals = [
       {
         id: "101",

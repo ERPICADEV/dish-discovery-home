@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -7,7 +6,7 @@ import MealCard from '@/components/MealCard';
 import { User } from '@/services/auth';
 import { api } from '@/services/api';
 import { useQuery } from '@tanstack/react-query';
-import { Loader2 } from 'lucide-react';
+import { Loader2, MapPin, Phone, Briefcase } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
@@ -207,25 +206,7 @@ const ChefProfile = () => {
             <div className="flex-1 text-center md:text-left">
               <h1 className="text-3xl font-bold mb-2">{chef.name}</h1>
               <div className="flex items-center justify-center md:justify-start mb-2">
-                <svg
-                  className="w-5 h-5 text-gray-600 mr-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
+                <MapPin className="w-5 h-5 text-gray-600 mr-1" />
                 <span className="text-gray-600">{chef.location}</span>
               </div>
               <div className="mb-4 flex justify-center md:justify-start">

@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Edit2, User, MapPin, Mail, Phone, Star, Loader2 } from 'lucide-react';
+import { Edit2, User, MapPin, Mail, Phone, Star, Loader2, Briefcase } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getProfile } from '@/services/auth';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -81,27 +81,23 @@ const Profile = () => {
                     <Mail className="h-5 w-5 text-gray-400" />
                     <span>{profileData?.email}</span>
                   </div>
-                  {isChef && profileData?.user_metadata && (
-                    <>
-                      {profileData.user_metadata.location && (
-                        <div className="flex items-center gap-4">
-                          <MapPin className="h-5 w-5 text-gray-400" />
-                          <span>{profileData.user_metadata.location}</span>
-                        </div>
-                      )}
-                      {profileData.user_metadata.phone && (
-                        <div className="flex items-center gap-4">
-                          <Phone className="h-5 w-5 text-gray-400" />
-                          <span>{profileData.user_metadata.phone}</span>
-                        </div>
-                      )}
-                      {profileData.user_metadata.experience && (
-                        <div className="flex items-center gap-4">
-                          <Star className="h-5 w-5 text-gray-400" />
-                          <span>{profileData.user_metadata.experience} experience</span>
-                        </div>
-                      )}
-                    </>
+                  {profileData?.user_metadata?.phone && (
+                    <div className="flex items-center gap-4">
+                      <Phone className="h-5 w-5 text-gray-400" />
+                      <span>{profileData.user_metadata.phone}</span>
+                    </div>
+                  )}
+                  {profileData?.user_metadata?.location && (
+                    <div className="flex items-center gap-4">
+                      <MapPin className="h-5 w-5 text-gray-400" />
+                      <span>{profileData.user_metadata.location}</span>
+                    </div>
+                  )}
+                  {profileData?.user_metadata?.experience && (
+                    <div className="flex items-center gap-4">
+                      <Briefcase className="h-5 w-5 text-gray-400" />
+                      <span>{profileData.user_metadata.experience} experience</span>
+                    </div>
                   )}
                 </div>
               </CardContent>
@@ -109,7 +105,7 @@ const Profile = () => {
           </div>
 
           <div className="md:col-span-2">
-            {isChef && profileData?.user_metadata?.about && (
+            {profileData?.user_metadata?.about && (
               <Card className="mb-6">
                 <CardHeader>
                   <CardTitle>About</CardTitle>

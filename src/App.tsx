@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,7 +12,6 @@ import Landing from "./pages/Landing";
 import Browse from "./pages/Browse";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
-import ChefSignUp from "./pages/ChefSignUp";
 import ChefDashboard from "./pages/ChefDashboard";
 import Orders from "./pages/Orders";
 import NotFound from "./pages/NotFound";
@@ -43,32 +43,6 @@ const App = () => (
                   <Profile />
                 </ProtectedRoute>
               } />
-              <Route path="/chef-signup" element={<ChefSignUp />} />
-              <Route 
-                path="/order/:dishId" 
-                element={
-                  <ProtectedRoute requiresCustomer={true}>
-                    <OrderDish />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/chef/:chefId" 
-                element={
-                  <ProtectedRoute>
-                    <ChefProfile />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/dashboard" 
-                element={
-                  <ProtectedRoute requiresChef={true}>
-                    <ChefDashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route path="/chef-signup" element={<ChefSignUp />} />
               <Route 
                 path="/order/:dishId" 
                 element={

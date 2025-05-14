@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getDishById, Dish } from "@/services/dishes";
@@ -21,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import LoginRequiredPrompt from "@/components/LoginRequiredPrompt";
 
 const orderFormSchema = z.object({
   quantity: z.coerce.number().int().min(1, "Quantity must be at least 1"),
@@ -35,7 +35,7 @@ const OrderDish = () => {
   const [dish, setDish] = useState<Dish | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { isLoggedIn, isCustomer, user } = useAuth();
+  const { isLoggedIn, isCustomer, isChef, user } = useAuth();
   const navigate = useNavigate();
 
   const form = useForm<OrderFormValues>({
@@ -131,20 +131,15 @@ const OrderDish = () => {
           Back to Browse
         </Button>
         
-        <div className="text-center py-12">
-          <h1 className="text-3xl font-bold mb-6">You must log in to place an order</h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-lg mx-auto">
-            Please log in or sign up to continue placing your order.
-          </p>
-          <div className="flex justify-center gap-4">
-            <Button onClick={() => navigate("/login")}>Login</Button>
-            <Button variant="outline" onClick={() => navigate("/signup")}>Sign Up</Button>
-          </div>
-        </div>
+        <LoginRequiredPrompt 
+          message="You must log in to place an order" 
+          returnPath="/browse"
+        />
       </div>
     );
   }
 
+  // Updated condition for chef accounts
   if (!isCustomer) {
     return (
       <div className="container-custom py-16">
@@ -159,7 +154,7 @@ const OrderDish = () => {
         <div className="text-center py-12">
           <h1 className="text-3xl font-bold mb-6">Customer Account Required</h1>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            You must have a customer account to order dishes.
+            Please log in as a customer to place an order.
           </p>
         </div>
       </div>

@@ -64,7 +64,6 @@ export const getChefHostings = async () => {
 export const getAllHostings = async () => {
   const response = await api<{ hostings: Hosting[] }>("/hosting/all", {
     method: "GET",
-    requiresAuth: true,
   });
   
   return response.hostings;

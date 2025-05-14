@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
@@ -62,9 +61,6 @@ const Navbar = () => {
           
           {!isLoggedIn ? (
             <>
-              <Link to="/chef-signup" className="font-medium hover:text-idish-orange transition-colors dark:text-white dark:hover:text-idish-orange">
-                Become a Chef
-              </Link>
               <Link to="/login">
                 <Button variant="outline" className="ml-4">
                   Login
@@ -201,14 +197,6 @@ const Navbar = () => {
           
           {!isLoggedIn ? (
             <>
-              <Link 
-                to="/chef-signup" 
-                onClick={() => setMobileMenuOpen(false)}
-                className="flex items-center space-x-2 font-medium hover:text-idish-orange transition-colors dark:text-white dark:hover:text-idish-orange"
-              >
-                <ChefHat size={20} />
-                <span>Become a Chef</span>
-              </Link>
               <Link 
                 to="/login"
                 onClick={() => setMobileMenuOpen(false)}

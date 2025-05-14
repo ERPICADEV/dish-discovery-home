@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { User, isAuthenticated, getCurrentUser, logout } from "@/services/auth";
 import { toast } from "@/hooks/use-toast";
@@ -17,6 +16,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -27,6 +27,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setIsLoggedIn(true);
       }
     }
+    setLoading(false);
   }, []);
 
   const handleLogin = (userData: User) => {
@@ -46,6 +47,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isChef = Boolean(user?.user_metadata?.role === "chef");
   const isCustomer = Boolean(user?.user_metadata?.role === "customer");
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <AuthContext.Provider

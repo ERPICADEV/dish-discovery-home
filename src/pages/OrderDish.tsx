@@ -1,46 +1,31 @@
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getDishById, Dish } from "@/services/dishes";
 import { createOrder } from "@/services/orders";
 import { useAuth } from "@/contexts/AuthContext";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "@/hooks/use-toast";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import LoginRequiredPrompt from "@/components/LoginRequiredPrompt";
 
 const orderFormSchema = z.object({
-  name: z.string().min(2, {
-    message: "Name must be at least 2 characters.",
-  }),
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  phone: z.string().min(10, {
-    message: "Phone number must be at least 10 digits.",
-  }),
-  address: z.string().min(5, {
-    message: "Address must be at least 5 characters.",
-  }),
-  notes: z.string().optional(),
+  quantity: z.coerce.number().int().min(1, "Quantity must be at least 1"),
+  delivery_address: z.string().min(10, "Address must be at least 10 characters"),
+  special_instructions: z.string().optional(),
 });
 
 type OrderFormValues = z.infer<typeof orderFormSchema>;
@@ -50,33 +35,50 @@ const OrderDish = () => {
   const [dish, setDish] = useState<Dish | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { isLoggedIn, isCustomer, isChef, user } = useAuth();
+  const { isLoggedIn, isCustomer, user } = useAuth();
   const navigate = useNavigate();
 
   const form = useForm<OrderFormValues>({
     resolver: zodResolver(orderFormSchema),
     defaultValues: {
-      name: user?.user_metadata?.name || "",
-      email: user?.email || "",
-      phone: user?.user_metadata?.phone || "",
-      address: user?.user_metadata?.location || "",
-      notes: "",
+      quantity: 1,
+      delivery_address: "",
+      special_instructions: "",
     },
   });
 
+  // Update delivery address if user metadata is available
   useEffect(() => {
-    if (!dishId) return;
+    if (user?.user_metadata) {
+      // Access address safely with optional chaining
+      const userMetadata = user.user_metadata as Record<string, any>;
+      const userAddress = userMetadata?.address || "";
+      form.setValue("delivery_address", userAddress);
+    }
+  }, [user, form]);
 
-    const loadDish = async () => {
+  useEffect(() => {
+    const fetchDish = async () => {
+      if (!dishId) {
+        // Handle missing dishId by redirecting
+        toast({
+          title: "Error",
+          description: "Invalid dish ID.",
+          variant: "destructive",
+        });
+        navigate("/browse");
+        return;
+      }
+      
       try {
         setIsLoading(true);
         const dishData = await getDishById(dishId);
         setDish(dishData);
       } catch (error) {
-        console.error("Error loading dish:", error);
+        console.error("Failed to fetch dish:", error);
         toast({
           title: "Error",
-          description: "Failed to load dish details. Please try again later.",
+          description: "Failed to load dish information.",
           variant: "destructive",
         });
       } finally {
@@ -84,42 +86,33 @@ const OrderDish = () => {
       }
     };
 
-    loadDish();
-  }, [dishId]);
+    fetchDish();
+  }, [dishId, navigate]);
 
-  const onSubmit = async (values: OrderFormValues) => {
-    if (!dishId) return;
-
-    setIsSubmitting(true);
+  const onSubmit = async (data: OrderFormValues) => {
+    if (!dish) return;
+    
     try {
-      const response = await createOrder({
-        dish_id: dishId,
-        customer_id: user?.id || "",
-        customer_name: values.name,
-        customer_email: values.email,
-        customer_phone: values.phone,
-        delivery_address: values.address,
-        notes: values.notes,
+      setIsSubmitting(true);
+      
+      await createOrder({
+        dish_id: dish.id,
+        quantity: data.quantity,
+        delivery_address: data.delivery_address,
+        special_instructions: data.special_instructions,
       });
-
-      if (response.message === "Order created successfully") {
-        toast({
-          title: "Success",
-          description: "Your order has been placed successfully!",
-        });
-        navigate("/orders");
-      } else {
-        toast({
-          title: "Error",
-          description: "Failed to create order. Please try again.",
-          variant: "destructive",
-        });
-      }
+      
+      toast({
+        title: "Success",
+        description: "Your order has been placed successfully!",
+      });
+      
+      navigate("/orders");
     } catch (error) {
-      console.error("Order creation error:", error);
+      console.error("Failed to place order:", error);
       toast({
         title: "Error",
-        description: "An unexpected error occurred. Please try again later.",
+        description: "Failed to place your order. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -127,173 +120,197 @@ const OrderDish = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="container-custom py-16">
-        <div className="text-center">
-          <div className="flex justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          </div>
-          <p className="mt-4">Loading dish details...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!dish) {
-    return (
-      <div className="container-custom py-16">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold mb-6">Dish Not Found</h1>
-          <p className="mb-8">Sorry, we couldn't find the dish you're looking for.</p>
-          <Button onClick={() => navigate("/browse")}>Back to Browse</Button>
-        </div>
-      </div>
-    );
-  }
-
   if (!isLoggedIn) {
     return (
       <div className="container-custom py-16">
-        <Button
-          variant="outline"
-          className="mb-8"
-          onClick={() => navigate("/browse")}
+        <Button 
+          variant="outline" 
+          className="mb-6"
+          onClick={() => navigate(-1)}
         >
           Back to Browse
         </Button>
         
-        <LoginRequiredPrompt 
-          message="You must log in to place an order" 
-          returnPath="/browse"
-        />
+        <div className="text-center py-12">
+          <h1 className="text-3xl font-bold mb-6">You must log in to place an order</h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-lg mx-auto">
+            Please log in or sign up to continue placing your order.
+          </p>
+          <div className="flex justify-center gap-4">
+            <Button onClick={() => navigate("/login")}>Login</Button>
+            <Button variant="outline" onClick={() => navigate("/signup")}>Sign Up</Button>
+          </div>
+        </div>
       </div>
     );
   }
 
-  if (isChef) {
+  if (!isCustomer) {
     return (
       <div className="container-custom py-16">
-        <Button
-          variant="outline"
-          className="mb-8"
-          onClick={() => navigate("/browse")}
+        <Button 
+          variant="outline" 
+          className="mb-6"
+          onClick={() => navigate(-1)}
         >
           Back to Browse
         </Button>
         
-        <LoginRequiredPrompt 
-          message="Please log in as a customer to place an order" 
-          returnPath="/browse"
-        />
+        <div className="text-center py-12">
+          <h1 className="text-3xl font-bold mb-6">Customer Account Required</h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            You must have a customer account to order dishes.
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="container-custom py-16">
-      <Button
-        variant="outline"
-        className="mb-8"
-        onClick={() => navigate("/browse")}
+      <Button 
+        variant="outline" 
+        className="mb-6"
+        onClick={() => navigate(-1)}
       >
         Back to Browse
       </Button>
+      
+      <h1 className="text-3xl font-bold mb-6">Place an Order</h1>
+      
+      {isLoading ? (
+        <div className="flex justify-center">
+          <p>Loading dish details...</p>
+        </div>
+      ) : dish ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Dish Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle>{dish.title}</CardTitle>
+              <CardDescription>Cuisine: {dish.cuisine_type}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="h-60 rounded-md overflow-hidden">
+                <img 
+                  src={dish.image_url || "/placeholder.svg"} 
+                  alt={dish.title} 
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <p>{dish.description}</p>
+              <div className="text-xl font-semibold">${dish.price.toFixed(2)}</div>
+            </CardContent>
+          </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">{dish.title}</CardTitle>
-          <CardDescription>Order your {dish.title} today!</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          <div className="grid gap-2">
-            <img
-              src={dish.image_url}
-              alt={dish.title}
-              className="rounded-md object-cover h-48 w-full"
-            />
-            <p>{dish.description}</p>
-            <p className="text-xl font-semibold">Price: ${dish.price.toFixed(2)}</p>
-          </div>
+          {/* Order Form */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Order Details</CardTitle>
+              <CardDescription>Please provide your order information</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="quantity"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Quantity</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            min="1"
+                            {...field}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value);
+                              if (value > 0) {
+                                field.onChange(value);
+                              }
+                            }}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          How many servings do you want?
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Your Name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Your Email" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone Number</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Your Phone Number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Delivery Address</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Your Address" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="notes"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Additional Notes</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Any special requests or notes for the chef?"
-                        className="resize-none"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Submitting..." : "Place Order"}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+                  <FormField
+                    control={form.control}
+                    name="delivery_address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Delivery Address</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Your full address" {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          Where should the order be delivered?
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="special_instructions"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Special Instructions (Optional)</FormLabel>
+                        <FormControl>
+                          <Textarea 
+                            placeholder="Any special requests or dietary concerns?"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  
+                  <div className="border-t pt-4">
+                    <div className="flex justify-between mb-2">
+                      <span>Price per serving:</span>
+                      <span>${dish.price.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between mb-2">
+                      <span>Quantity:</span>
+                      <span>{form.watch("quantity") || 1}</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-lg">
+                      <span>Total:</span>
+                      <span>${((form.watch("quantity") || 1) * dish.price).toFixed(2)}</span>
+                    </div>
+                  </div>
+
+                  <CardFooter className="flex justify-end px-0">
+                    <Button 
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full"
+                    >
+                      {isSubmitting ? "Placing Order..." : "Place Order"}
+                    </Button>
+                  </CardFooter>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
+        </div>
+      ) : (
+        <div className="text-center py-12">
+          <h2 className="text-xl font-semibold mb-2">Dish not found</h2>
+          <p className="text-gray-600 mb-6">
+            The dish you're looking for doesn't exist or may have been removed.
+          </p>
+          <Button onClick={() => navigate("/browse")}>Browse Dishes</Button>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,3 +1,4 @@
+
 import { api } from "./api";
 
 export interface Hosting {
@@ -31,6 +32,17 @@ export interface BookingData {
 export const createHosting = async (hostingData: CreateHostingData) => {
   const response = await api<{ message: string; hosting: Hosting }>("/hosting/create", {
     method: "POST",
+    body: JSON.stringify(hostingData),
+    requiresAuth: true,
+  });
+  
+  return response;
+};
+
+// Update an existing hosting
+export const updateHosting = async (hostingId: string, hostingData: CreateHostingData) => {
+  const response = await api<{ message: string; hosting: Hosting }>(`/hosting/${hostingId}`, {
+    method: "PUT",
     body: JSON.stringify(hostingData),
     requiresAuth: true,
   });

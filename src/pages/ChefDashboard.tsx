@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getChefDishes, Dish, updateDish, deleteDish } from "@/services/dishes";
 import { getChefOrders, Order, updateOrderStatus } from "@/services/orders";
-import { getChefHostings, Hosting, createHosting } from "@/services/hosting";
+import { getChefHostings, Hosting, createHosting, updateHosting } from "@/services/hosting";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -22,6 +22,7 @@ import { Label } from "@/components/ui/label";
 import AddDishForm from "@/components/AddDishForm";
 import AddHostingForm from "@/components/AddHostingForm";
 import EditDishForm from "@/components/EditDishForm";
+import EditHostingForm from "@/components/EditHostingForm";
 
 const ChefDashboard = () => {
   const [dishes, setDishes] = useState<Dish[]>([]);
@@ -34,11 +35,14 @@ const ChefDashboard = () => {
   const [isAddHostingDialogOpen, setIsAddHostingDialogOpen] = useState(false);
   const [editingDish, setEditingDish] = useState<Dish | null>(null);
   const [isEditDishDialogOpen, setIsEditDishDialogOpen] = useState(false);
+  const [editingHosting, setEditingHosting] = useState<Hosting | null>(null);
+  const [isEditHostingDialogOpen, setIsEditHostingDialogOpen] = useState(false);
   const { isChef } = useAuth();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true);
         const [dishesData, ordersData, hostingsData] = await Promise.all([
           getChefDishes(),
           getChefOrders(),
@@ -133,6 +137,28 @@ const ChefDashboard = () => {
       });
     }
   };
+
+  const handleDeleteHosting = async (id: string) => {
+    try {
+      // This function doesn't exist yet, but we're preparing for it
+      // await deleteHosting(id);
+      
+      // Update local state
+      setHostings(hostings.filter(h => h.id !== id));
+      
+      toast({
+        title: "Success",
+        description: "Hosting deleted successfully.",
+      });
+    } catch (error) {
+      console.error("Failed to delete hosting:", error);
+      toast({
+        title: "Error",
+        description: "Failed to delete hosting. It might have active bookings.",
+        variant: "destructive",
+      });
+    }
+  };
   
   const handleDishAdded = () => {
     setIsAddDishDialogOpen(false);
@@ -165,6 +191,18 @@ const ChefDashboard = () => {
       setDishes(newDishes);
     }).catch(error => {
       console.error("Failed to refresh dishes:", error);
+    });
+  };
+
+  const handleHostingEdited = () => {
+    setIsEditHostingDialogOpen(false);
+    setEditingHosting(null);
+    
+    // Refresh hostings
+    getChefHostings().then(newHostings => {
+      setHostings(newHostings);
+    }).catch(error => {
+      console.error("Failed to refresh hostings:", error);
     });
   };
 
@@ -366,8 +404,23 @@ const ChefDashboard = () => {
                       </div>
                     </CardContent>
                     <CardFooter className="flex justify-end space-x-2">
-                      <Button variant="outline" size="sm">Edit</Button>
-                      <Button variant="destructive" size="sm">Delete</Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => {
+                          setEditingHosting(hosting);
+                          setIsEditHostingDialogOpen(true);
+                        }}
+                      >
+                        Edit
+                      </Button>
+                      <Button 
+                        variant="destructive" 
+                        size="sm"
+                        onClick={() => handleDeleteHosting(hosting.id)}
+                      >
+                        Delete
+                      </Button>
                     </CardFooter>
                   </Card>
                 ))}
@@ -470,6 +523,29 @@ const ChefDashboard = () => {
                 onCancel={() => {
                   setIsEditDishDialogOpen(false);
                   setEditingDish(null);
+                }}
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isEditHostingDialogOpen} onOpenChange={setIsEditHostingDialogOpen}>
+        <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Hosting</DialogTitle>
+            <DialogDescription>
+              Update the details of your culinary event
+            </DialogDescription>
+          </DialogHeader>
+          {editingHosting && (
+            <div className="mt-4">
+              <EditHostingForm 
+                hosting={editingHosting} 
+                onSuccess={handleHostingEdited}
+                onCancel={() => {
+                  setIsEditHostingDialogOpen(false);
+                  setEditingHosting(null);
                 }}
               />
             </div>

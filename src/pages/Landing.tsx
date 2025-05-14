@@ -5,6 +5,7 @@ import HowItWorksStep from "@/components/HowItWorksStep";
 import TestimonialCard from "@/components/TestimonialCard";
 import FeaturedMeals from "@/components/FeaturedMeals";
 import { useAuth } from "@/contexts/AuthContext";
+import { Search, Utensils, Truck } from "lucide-react";
 
 const Landing = () => {
   const navigate = useNavigate();
@@ -56,16 +57,19 @@ const Landing = () => {
               number={1}
               title="Browse & Choose"
               description="Explore our diverse selection of meals from talented local chefs in your area."
+              icon={<Search size={24} />}
             />
             <HowItWorksStep
               number={2}
               title="Place Your Order"
               description="Select your preferred dishes, delivery options, and schedule your meal."
+              icon={<Utensils size={24} />}
             />
             <HowItWorksStep
               number={3}
               title="Enjoy Your Meal"
               description="Receive your freshly prepared meal and enjoy an authentic culinary experience."
+              icon={<Truck size={24} />}
             />
           </div>
         </div>
@@ -78,22 +82,22 @@ const Landing = () => {
           
           <div className="grid md:grid-cols-3 gap-8">
             <TestimonialCard
-              name="Sarah M."
-              image="/placeholder.svg"
-              rating={5}
-              text="The chef's table experience was incredible! The food was amazing and the chef was so knowledgeable and friendly."
+              content="The chef's table experience was incredible! The food was amazing and the chef was so knowledgeable and friendly."
+              author="Sarah M."
+              role="Food Enthusiast"
+              avatar="/placeholder.svg"
             />
             <TestimonialCard
-              name="Michael L."
-              image="/placeholder.svg"
-              rating={4}
-              text="Ordering through iDISH has completely changed how I think about takeout. The quality and variety is unmatched!"
+              content="Ordering through iDISH has completely changed how I think about takeout. The quality and variety is unmatched!"
+              author="Michael L."
+              role="Regular Customer"
+              avatar="/placeholder.svg"
             />
             <TestimonialCard
-              name="Jennifer K."
-              image="/placeholder.svg"
-              rating={5}
-              text="As someone with dietary restrictions, I appreciate how accommodating the chefs are. Delicious food that meets my needs!"
+              content="As someone with dietary restrictions, I appreciate how accommodating the chefs are. Delicious food that meets my needs!"
+              author="Jennifer K."
+              role="Health-Conscious Diner"
+              avatar="/placeholder.svg"
             />
           </div>
         </div>

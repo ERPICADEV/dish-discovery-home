@@ -22,17 +22,17 @@ export async function uploadImage(file: File, bucket: string, folder: string = '
       return { url: null, error: 'File too large. Maximum size is 5MB.' };
     }
 
-    // Create a FormData object and append the file (using the key 'image') and bucket query parameter
+    // Create a FormData object and append the file and bucket
     const formData = new FormData();
     formData.append('image', file);
-    // (Optional) if folder is provided, append it (or use a custom header if needed)
+    formData.append('bucket', bucket);
     if (folder) formData.append('folder', folder);
 
-    // Get the token from your auth system (example: from localStorage)
-    const token = localStorage.getItem('token'); // or however you store it
+    // Get the token from your auth system
+    const token = localStorage.getItem('token');
 
-    // Send a POST request to the backend endpoint /image/upload with query parameter bucket
-    const response = await fetch(`${API_URL}/image/upload?bucket=${encodeURIComponent(bucket)}`, {
+    // Send a POST request to the backend endpoint /image/upload
+    const response = await fetch(`${API_URL}/image/upload`, {
       method: 'POST',
       headers: token ? { 'Authorization': `Bearer ${token}` } : {},
       body: formData

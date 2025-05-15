@@ -153,31 +153,10 @@ const AddDishForm = ({ onSuccess }: AddDishFormProps) => {
   const onSubmit = async (data: DishFormValues) => {
     try {
       setIsSubmitting(true);
-      
-      // Upload image if selected
-      let imageUrl = data.image_url || "";
-      
-      if (selectedImage) {
-        setIsUploading(true);
-        const uploadResult = await uploadImage(selectedImage, 'dishes');
-        
-        if (uploadResult.error) {
-          toast({
-            title: "Upload Failed",
-            description: uploadResult.error,
-            variant: "destructive",
-          });
-          setIsSubmitting(false);
-          setIsUploading(false);
-          return;
-        }
-        
-        if (uploadResult.url) {
-          imageUrl = uploadResult.url;
-        }
-        setIsUploading(false);
-      }
-      
+
+      // Use the image_url already set by handleImageChange
+      const imageUrl = data.image_url || "";
+
       // Ensure all required fields are present with proper types
       await addDish({
         title: data.title,
@@ -187,12 +166,12 @@ const AddDishForm = ({ onSuccess }: AddDishFormProps) => {
         cuisine_type: data.cuisine_type,
         available: data.available,
       });
-      
+
       toast({
         title: "Success",
         description: "Dish added successfully!",
       });
-      
+
       // Reset form and state
       form.reset();
       setSelectedImage(null);

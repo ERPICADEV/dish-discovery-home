@@ -149,32 +149,10 @@ const AddHostingForm = ({ onSuccess }: AddHostingFormProps) => {
   const onSubmit = async (data: HostingFormValues) => {
     try {
       setIsSubmitting(true);
-      
-      // Upload image if selected
-      let imageUrl = data.image_url || "";
-      
-      if (selectedImage) {
-        setIsUploading(true);
-        const uploadResult = await uploadImage(selectedImage, 'hostings');
-        
-        if (uploadResult.error) {
-          toast({
-            title: "Upload Failed",
-            description: uploadResult.error,
-            variant: "destructive",
-          });
-          setIsSubmitting(false);
-          setIsUploading(false);
-          return;
-        }
-        
-        if (uploadResult.url) {
-          imageUrl = uploadResult.url;
-        }
-        setIsUploading(false);
-      }
-      
-      // Ensure all required fields are present with proper types
+
+      // Use the image_url already set by handleImageChange
+      const imageUrl = data.image_url || "";
+
       await createHosting({
         title: data.title,
         description: data.description || "",
@@ -185,12 +163,12 @@ const AddHostingForm = ({ onSuccess }: AddHostingFormProps) => {
         price_per_guest: data.price_per_guest,
         image_url: imageUrl,
       });
-      
+
       toast({
         title: "Success",
         description: "Hosting created successfully!",
       });
-      
+
       // Reset form and state
       form.reset();
       setSelectedImage(null);

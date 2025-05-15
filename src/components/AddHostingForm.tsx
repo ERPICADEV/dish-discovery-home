@@ -61,10 +61,6 @@ const AddHostingForm = ({ onSuccess }: AddHostingFormProps) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [supabaseConfigured] = useState(
-    !!import.meta.env.VITE_SUPABASE_URL && 
-    !!import.meta.env.VITE_SUPABASE_ANON_KEY
-  );
 
   const form = useForm<HostingFormValues>({
     resolver: zodResolver(hostingSchema),
@@ -80,14 +76,9 @@ const AddHostingForm = ({ onSuccess }: AddHostingFormProps) => {
     },
   });
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     setUploadError(null);
-    
-    if (!supabaseConfigured) {
-      setUploadError("Supabase storage not configured. Image uploads are disabled.");
-      return;
-    }
     
     if (file) {
       // Validate file type
@@ -111,6 +102,41 @@ const AddHostingForm = ({ onSuccess }: AddHostingFormProps) => {
         setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
+
+      try {
+        setIsUploading(true);
+        const { url, error } = await uploadImage(file, 'hostings');
+        
+        if (error) {
+          toast({
+            title: "Upload Failed",
+            description: error,
+            variant: "destructive",
+          });
+          setIsSubmitting(false);
+          setIsUploading(false);
+          e.target.value = "";
+          return;
+        }
+        
+        if (url) {
+          form.setValue("image_url", url);
+          toast({
+            title: "Image Uploaded",
+            description: "Your hosting image has been uploaded.",
+          });
+        }
+      } catch (error) {
+        console.error("Failed to upload image:", error);
+        toast({
+          title: "Error",
+          description: "Failed to upload image. Please try again.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsSubmitting(false);
+        setIsUploading(false);
+      }
     }
   };
 
@@ -128,29 +154,24 @@ const AddHostingForm = ({ onSuccess }: AddHostingFormProps) => {
       let imageUrl = data.image_url || "";
       
       if (selectedImage) {
-        if (!supabaseConfigured) {
-          // Use placeholder image if Supabase is not configured
-          imageUrl = getPlaceholderImage();
-        } else {
-          setIsUploading(true);
-          const uploadResult = await uploadImage(selectedImage, 'hostings');
-          
-          if (uploadResult.error) {
-            toast({
-              title: "Upload Failed",
-              description: uploadResult.error,
-              variant: "destructive",
-            });
-            setIsSubmitting(false);
-            setIsUploading(false);
-            return;
-          }
-          
-          if (uploadResult.url) {
-            imageUrl = uploadResult.url;
-          }
+        setIsUploading(true);
+        const uploadResult = await uploadImage(selectedImage, 'hostings');
+        
+        if (uploadResult.error) {
+          toast({
+            title: "Upload Failed",
+            description: uploadResult.error,
+            variant: "destructive",
+          });
+          setIsSubmitting(false);
           setIsUploading(false);
+          return;
         }
+        
+        if (uploadResult.url) {
+          imageUrl = uploadResult.url;
+        }
+        setIsUploading(false);
       }
       
       // Ensure all required fields are present with proper types

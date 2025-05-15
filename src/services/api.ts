@@ -1,6 +1,6 @@
 import { toast } from "@/hooks/use-toast";
 
-const API_BASE_URL = "https://build-idish-backend-production.up.railway.app";
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
 interface ApiOptions {
   method?: string;

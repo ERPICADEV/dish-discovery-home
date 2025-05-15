@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X } from 'lucide-react';
+import { uploadImage } from '../utils/fileUpload';
 
 interface DishItem {
   id: string;
@@ -71,14 +71,17 @@ const ChefSignUp = () => {
     );
   };
 
-  const handleProfileImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfileImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      const { url, error } = await uploadImage(file, "chefs");
+      if (error) {
+        toast({ title: "Upload failed", description: error, status: "error" });
+        e.target.value = "";
+        return;
+      }
+      setProfileImage(url);
+      toast({ title: "Image uploaded", description: "Your profile image has been uploaded.", status: "success" });
     }
   };
 

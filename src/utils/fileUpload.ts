@@ -1,10 +1,14 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Get environment variables or provide a fallback for development
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Create a Supabase client if environment variables are available
+const supabase = supabaseUrl && supabaseAnonKey 
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;
 
 interface UploadResult {
   url: string | null;
@@ -17,6 +21,15 @@ export async function uploadImage(
   folder: string = ''
 ): Promise<UploadResult> {
   try {
+    // Check if Supabase is initialized
+    if (!supabase) {
+      console.error('Supabase client not initialized. Missing environment variables.');
+      return { 
+        url: null, 
+        error: 'Image upload is not configured. Please contact the administrator.' 
+      };
+    }
+    
     if (!file) return { url: null, error: 'No file provided' };
     
     // Validate file type
@@ -61,4 +74,9 @@ export async function uploadImage(
       error: error instanceof Error ? error.message : 'An unexpected error occurred' 
     };
   }
+}
+
+// Fallback function that returns a placeholder URL when Supabase is not configured
+export function getPlaceholderImage(): string {
+  return 'https://placehold.co/600x400?text=Image+Preview';
 }

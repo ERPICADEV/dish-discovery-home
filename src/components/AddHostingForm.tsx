@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -19,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
-import { uploadImage } from "@/utils/fileUpload";
+import { uploadImage, getPlaceholderImage } from "@/utils/fileUpload";
 import { X, Upload } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 
@@ -62,6 +61,10 @@ const AddHostingForm = ({ onSuccess }: AddHostingFormProps) => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [supabaseConfigured] = useState(
+    !!import.meta.env.VITE_SUPABASE_URL && 
+    !!import.meta.env.VITE_SUPABASE_ANON_KEY
+  );
 
   const form = useForm<HostingFormValues>({
     resolver: zodResolver(hostingSchema),
@@ -80,6 +83,11 @@ const AddHostingForm = ({ onSuccess }: AddHostingFormProps) => {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     setUploadError(null);
+    
+    if (!supabaseConfigured) {
+      setUploadError("Supabase storage not configured. Image uploads are disabled.");
+      return;
+    }
     
     if (file) {
       // Validate file type
@@ -120,24 +128,29 @@ const AddHostingForm = ({ onSuccess }: AddHostingFormProps) => {
       let imageUrl = data.image_url || "";
       
       if (selectedImage) {
-        setIsUploading(true);
-        const uploadResult = await uploadImage(selectedImage, 'hostings');
-        
-        if (uploadResult.error) {
-          toast({
-            title: "Upload Failed",
-            description: uploadResult.error,
-            variant: "destructive",
-          });
-          setIsSubmitting(false);
+        if (!supabaseConfigured) {
+          // Use placeholder image if Supabase is not configured
+          imageUrl = getPlaceholderImage();
+        } else {
+          setIsUploading(true);
+          const uploadResult = await uploadImage(selectedImage, 'hostings');
+          
+          if (uploadResult.error) {
+            toast({
+              title: "Upload Failed",
+              description: uploadResult.error,
+              variant: "destructive",
+            });
+            setIsSubmitting(false);
+            setIsUploading(false);
+            return;
+          }
+          
+          if (uploadResult.url) {
+            imageUrl = uploadResult.url;
+          }
           setIsUploading(false);
-          return;
         }
-        
-        if (uploadResult.url) {
-          imageUrl = uploadResult.url;
-        }
-        setIsUploading(false);
       }
       
       // Ensure all required fields are present with proper types

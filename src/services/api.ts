@@ -1,6 +1,6 @@
 import { toast } from "@/hooks/use-toast";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL;
+const API_BASE_URL = `https://${import.meta.env.VITE_API_URL}`;
 
 interface ApiOptions {
   method?: string;
@@ -62,5 +62,5 @@ export const getImageUrl = (path: string | null | undefined): string => {
   }
   
   // Otherwise, join with the API base URL
-  return `${API_BASE_URL}${path}`;
+  return `https://${import.meta.env.VITE_API_URL}${path}`;
 };

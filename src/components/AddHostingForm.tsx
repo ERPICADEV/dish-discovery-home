@@ -19,6 +19,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
+import { uploadImage } from "@/utils/fileUpload";
+import { X, Upload } from "lucide-react";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const days = [
   { id: "monday", label: "Monday" },
@@ -44,6 +47,7 @@ const hostingSchema = z.object({
   time_slots: z.array(z.string()).min(1, "Select at least one time slot"),
   max_guests: z.coerce.number().int().positive("Number of guests must be positive"),
   price_per_guest: z.coerce.number().positive("Price must be positive"),
+  image_url: z.string().optional(),
 });
 
 type HostingFormValues = z.infer<typeof hostingSchema>;
@@ -54,6 +58,10 @@ interface AddHostingFormProps {
 
 const AddHostingForm = ({ onSuccess }: AddHostingFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const form = useForm<HostingFormValues>({
     resolver: zodResolver(hostingSchema),
@@ -65,12 +73,73 @@ const AddHostingForm = ({ onSuccess }: AddHostingFormProps) => {
       time_slots: [],
       max_guests: 4,
       price_per_guest: 0,
+      image_url: "",
     },
   });
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    setUploadError(null);
+    
+    if (file) {
+      // Validate file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+      if (!validTypes.includes(file.type)) {
+        setUploadError("Please select a JPG, JPEG, or PNG file.");
+        return;
+      }
+      
+      // Validate file size (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setUploadError("File is too large. Maximum size is 5MB.");
+        return;
+      }
+      
+      setSelectedImage(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    setSelectedImage(null);
+    setImagePreview(null);
+    form.setValue("image_url", "");
+  };
 
   const onSubmit = async (data: HostingFormValues) => {
     try {
       setIsSubmitting(true);
+      
+      // Upload image if selected
+      let imageUrl = data.image_url || "";
+      
+      if (selectedImage) {
+        setIsUploading(true);
+        const uploadResult = await uploadImage(selectedImage, 'hostings');
+        
+        if (uploadResult.error) {
+          toast({
+            title: "Upload Failed",
+            description: uploadResult.error,
+            variant: "destructive",
+          });
+          setIsSubmitting(false);
+          setIsUploading(false);
+          return;
+        }
+        
+        if (uploadResult.url) {
+          imageUrl = uploadResult.url;
+        }
+        setIsUploading(false);
+      }
+      
       // Ensure all required fields are present with proper types
       await createHosting({
         title: data.title,
@@ -80,12 +149,18 @@ const AddHostingForm = ({ onSuccess }: AddHostingFormProps) => {
         time_slots: data.time_slots,
         max_guests: data.max_guests,
         price_per_guest: data.price_per_guest,
+        image_url: imageUrl,
       });
+      
       toast({
         title: "Success",
         description: "Hosting created successfully!",
       });
+      
+      // Reset form and state
       form.reset();
+      setSelectedImage(null);
+      setImagePreview(null);
       onSuccess();
     } catch (error) {
       console.error("Failed to create hosting:", error);
@@ -155,6 +230,63 @@ const AddHostingForm = ({ onSuccess }: AddHostingFormProps) => {
             </FormItem>
           )}
         />
+
+        <FormItem>
+          <FormLabel>Hosting Image</FormLabel>
+          <div className="space-y-4">
+            {!imagePreview ? (
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+                <div className="flex flex-col items-center justify-center space-y-2">
+                  <Upload className="h-8 w-8 text-gray-400" />
+                  <FormLabel htmlFor="hosting-image" className="cursor-pointer text-center">
+                    <span className="text-primary font-medium">Click to upload</span>
+                    <span className="text-gray-500"> or drag and drop</span>
+                  </FormLabel>
+                  <FormDescription className="text-xs text-center">
+                    Upload an image of your hosting venue or atmosphere (JPG, JPEG, or PNG, max 5MB)
+                  </FormDescription>
+                  <Input 
+                    id="hosting-image"
+                    type="file" 
+                    className="hidden" 
+                    accept="image/jpeg,image/jpg,image/png"
+                    onChange={handleImageChange}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById('hosting-image')?.click()}
+                  >
+                    Select File
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <div className="relative rounded-lg overflow-hidden border border-gray-200">
+                <AspectRatio ratio={16 / 9} className="bg-gray-100">
+                  <img
+                    src={imagePreview}
+                    alt="Hosting venue preview"
+                    className="object-cover w-full h-full"
+                  />
+                </AspectRatio>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="absolute top-2 right-2 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white/50"
+                  onClick={removeImage}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+            {uploadError && (
+              <p className="text-sm font-medium text-destructive">{uploadError}</p>
+            )}
+          </div>
+        </FormItem>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
@@ -312,9 +444,9 @@ const AddHostingForm = ({ onSuccess }: AddHostingFormProps) => {
         <Button 
           type="submit" 
           className="w-full" 
-          disabled={isSubmitting}
+          disabled={isSubmitting || isUploading}
         >
-          {isSubmitting ? "Creating Hosting..." : "Create Hosting"}
+          {isSubmitting ? (isUploading ? "Uploading Image..." : "Creating Hosting...") : "Create Hosting"}
         </Button>
       </form>
     </Form>

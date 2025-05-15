@@ -11,6 +11,7 @@ export interface Hosting {
   time_slots: string[];
   max_guests: number;
   price_per_guest: number;
+  image_url?: string;
   created_at: string;
 }
 
@@ -22,6 +23,7 @@ export interface CreateHostingData {
   time_slots: string[];
   max_guests: number;
   price_per_guest: number;
+  image_url?: string;
 }
 
 export interface BookingData {

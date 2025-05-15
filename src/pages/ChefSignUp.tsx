@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -76,12 +77,12 @@ const ChefSignUp = () => {
     if (file) {
       const { url, error } = await uploadImage(file, "chefs");
       if (error) {
-        toast({ title: "Upload failed", description: error, status: "error" });
+        toast({ title: "Upload failed", description: error, variant: "destructive" });
         e.target.value = "";
         return;
       }
       setProfileImage(url);
-      toast({ title: "Image uploaded", description: "Your profile image has been uploaded.", status: "success" });
+      toast({ title: "Image uploaded", description: "Your profile image has been uploaded.", variant: "default" });
     }
   };
 

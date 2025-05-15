@@ -4,7 +4,8 @@ import { Hosting } from "@/services/hosting";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Clock, Users } from "lucide-react";
+import { MapPin, Clock, Users, Image } from "lucide-react";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 interface HostingCardProps {
   hosting: Hosting;
@@ -13,14 +14,35 @@ interface HostingCardProps {
 
 export const HostingCard = ({ hosting, onBookNowClick }: HostingCardProps) => {
   return (
-    <Card key={hosting.id} className="overflow-hidden">
+    <Card key={hosting.id} className="overflow-hidden flex flex-col">
+      {/* Image Section */}
+      {hosting.image_url ? (
+        <div className="w-full">
+          <AspectRatio ratio={16 / 9}>
+            <img 
+              src={hosting.image_url} 
+              alt={hosting.title}
+              className="object-cover w-full h-full" 
+            />
+          </AspectRatio>
+        </div>
+      ) : (
+        <div className="w-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+          <AspectRatio ratio={16 / 9}>
+            <div className="flex items-center justify-center h-full">
+              <Image size={40} className="text-gray-400" />
+            </div>
+          </AspectRatio>
+        </div>
+      )}
+
       <CardHeader className="pb-2">
         <CardTitle>{hosting.title}</CardTitle>
         <CardDescription className="flex items-center">
           <MapPin size={16} className="mr-1" /> {hosting.location}
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="flex-grow">
         <p className="text-sm mb-4">{hosting.description || "Join this exciting culinary experience!"}</p>
         <div className="space-y-2">
           <div className="flex items-center text-sm">

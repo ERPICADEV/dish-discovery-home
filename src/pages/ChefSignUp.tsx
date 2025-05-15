@@ -76,12 +76,12 @@ const ChefSignUp = () => {
     if (file) {
       const { url, error } = await uploadImage(file, "chefs");
       if (error) {
-        toast({ title: "Upload failed", description: error, status: "error" });
+        toast({ title: "Upload failed", description: error });
         e.target.value = "";
         return;
       }
       setProfileImage(url);
-      toast({ title: "Image uploaded", description: "Your profile image has been uploaded.", status: "success" });
+      toast({ title: "Image uploaded", description: "Your profile image has been uploaded." });
     }
   };
 

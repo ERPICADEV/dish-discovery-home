@@ -113,6 +113,10 @@ export default {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.5s ease-out'
+			},
+			backgroundImage: {
+				'dark-browse-gradient': 'linear-gradient(to right, #FDE1D3, #24243e)',
+				'dark-home-gradient': 'linear-gradient(to right, rgb(249 115 22 / .9), #24243e)'
 			}
 		}
 	},

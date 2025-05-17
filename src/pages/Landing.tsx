@@ -14,7 +14,7 @@ const Landing = () => {
   return (
     <>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-idish-orange/90 to-idish-peach text-white">
+      <section className="bg-gradient-to-r from-idish-orange/90 to-idish-peach dark:bg-dark-home-gradient text-white">
         <div className="container-custom py-20 md:py-32 flex flex-col items-center text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
             Home-Cooked Meals From Local Chefs

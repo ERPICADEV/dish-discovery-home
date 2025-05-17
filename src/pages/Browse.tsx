@@ -110,7 +110,7 @@ const Browse = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-16">
       {/* Hero Banner */}
-      <div className="bg-gradient-to-r from-idish-peach to-white dark:from-gray-800 dark:to-gray-900 py-10 md:py-16">
+      <div className="bg-gradient-to-r from-idish-peach to-white dark:bg-dark-browse-gradient py-10 md:py-16">
         <div className="container-custom">
           <h1 className="text-3xl md:text-4xl font-bold mb-4 dark:text-white">Discover Local Homemade Meals</h1>
           <p className="text-lg text-gray-700 dark:text-gray-300 mb-6 max-w-2xl">

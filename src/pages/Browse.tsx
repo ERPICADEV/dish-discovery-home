@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -108,12 +109,12 @@ const Browse = () => {
   }, [searchQuery, cuisineFilter, dietaryFilter, sortBy, allMeals]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-16">
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-bg pb-16">
       {/* Hero Banner */}
       <div className="bg-gradient-to-r from-idish-peach to-white dark:bg-dark-browse-gradient py-10 md:py-16">
         <div className="container-custom">
           <h1 className="text-3xl md:text-4xl font-bold mb-4 dark:text-white">Discover Local Homemade Meals</h1>
-          <p className="text-lg text-gray-700 dark:text-gray-300 mb-6 max-w-2xl">
+          <p className="text-lg text-gray-700 dark:text-dark-text mb-6 max-w-2xl">
             Browse delicious meals prepared with love by passionate home chefs in your area.
           </p>
           
@@ -123,13 +124,13 @@ const Browse = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               <Input
                 placeholder="Search meals, chefs, or cuisines..."
-                className="pl-10 py-6 rounded-md"
+                className="pl-10 py-6 rounded-md dark:bg-dark-card dark:border-dark-border"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
             </div>
             <Button 
-              className="md:hidden flex items-center gap-2"
+              className="md:hidden flex items-center gap-2 dark:bg-dark-card dark:text-dark-text dark:border-dark-border"
               onClick={() => setShowFilters(!showFilters)}
               variant="outline"
             >
@@ -145,7 +146,7 @@ const Browse = () => {
           {/* Filters - Desktop */}
           <div className="hidden md:block w-64 space-y-6 flex-shrink-0">
             <div>
-              <h3 className="font-semibold mb-3 flex items-center dark:text-white">
+              <h3 className="font-semibold mb-3 flex items-center dark:text-dark-text">
                 <Filter size={18} className="mr-2" />
                 Filters
               </h3>
@@ -153,7 +154,7 @@ const Browse = () => {
                 <div>
                   <label className="text-sm font-medium mb-1 block dark:text-gray-300">Cuisine</label>
                   <Select value={cuisineFilter} onValueChange={setCuisineFilter}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full dark:bg-dark-card dark:border-dark-border">
                       <SelectValue placeholder="Select cuisine" />
                     </SelectTrigger>
                     <SelectContent>
@@ -166,7 +167,7 @@ const Browse = () => {
                 <div>
                   <label className="text-sm font-medium mb-1 block dark:text-gray-300">Dietary</label>
                   <Select value={dietaryFilter} onValueChange={setDietaryFilter}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full dark:bg-dark-card dark:border-dark-border">
                       <SelectValue placeholder="Dietary needs" />
                     </SelectTrigger>
                     <SelectContent>
@@ -179,7 +180,7 @@ const Browse = () => {
                 <div>
                   <label className="text-sm font-medium mb-1 block dark:text-gray-300">Sort By</label>
                   <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full dark:bg-dark-card dark:border-dark-border">
                       <SelectValue placeholder="Sort by" />
                     </SelectTrigger>
                     <SelectContent>
@@ -195,13 +196,13 @@ const Browse = () => {
           
           {/* Mobile Filters */}
           {showFilters && (
-            <div className="md:hidden bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-4">
-              <h3 className="font-semibold mb-3 dark:text-white">Filters</h3>
+            <div className="md:hidden bg-white dark:bg-dark-card p-4 rounded-lg shadow mb-4">
+              <h3 className="font-semibold mb-3 dark:text-dark-text">Filters</h3>
               <div className="space-y-4">
                 <div>
                   <label className="text-sm font-medium mb-1 block dark:text-gray-300">Cuisine</label>
                   <Select value={cuisineFilter} onValueChange={setCuisineFilter}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full dark:bg-dark-card dark:border-dark-border">
                       <SelectValue placeholder="Select cuisine" />
                     </SelectTrigger>
                     <SelectContent>
@@ -214,7 +215,7 @@ const Browse = () => {
                 <div>
                   <label className="text-sm font-medium mb-1 block dark:text-gray-300">Dietary</label>
                   <Select value={dietaryFilter} onValueChange={setDietaryFilter}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full dark:bg-dark-card dark:border-dark-border">
                       <SelectValue placeholder="Dietary needs" />
                     </SelectTrigger>
                     <SelectContent>
@@ -227,7 +228,7 @@ const Browse = () => {
                 <div>
                   <label className="text-sm font-medium mb-1 block dark:text-gray-300">Sort By</label>
                   <Select value={sortBy} onValueChange={setSortBy}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-full dark:bg-dark-card dark:border-dark-border">
                       <SelectValue placeholder="Sort by" />
                     </SelectTrigger>
                     <SelectContent>
@@ -244,7 +245,7 @@ const Browse = () => {
           {/* Results */}
           <div className="flex-grow">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold dark:text-white">
+              <h2 className="text-xl font-semibold dark:text-dark-text">
                 {isLoading ? (
                   "Loading dishes..."
                 ) : (
@@ -254,7 +255,7 @@ const Browse = () => {
               <div className="hidden md:flex items-center">
                 <span className="text-sm text-gray-600 dark:text-gray-400 mr-2">Sort by:</span>
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-[180px] h-9">
+                  <SelectTrigger className="w-[180px] h-9 dark:bg-dark-card dark:border-dark-border">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>
@@ -269,7 +270,7 @@ const Browse = () => {
             {isLoading ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[1, 2, 3, 4, 5, 6].map((n) => (
-                  <div key={n} className="bg-gray-100 dark:bg-gray-800 rounded-lg h-64 animate-pulse"></div>
+                  <div key={n} className="bg-gray-100 dark:bg-dark-card rounded-lg h-64 animate-pulse"></div>
                 ))}
               </div>
             ) : (

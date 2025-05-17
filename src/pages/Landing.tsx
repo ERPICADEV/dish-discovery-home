@@ -25,7 +25,7 @@ const Landing = () => {
           <div className="flex flex-col sm:flex-row gap-4">
             <Button 
               size="lg" 
-              className="bg-white text-idish-orange hover:bg-gray-100"
+              className="bg-white text-idish-orange hover:bg-gray-100 dark:bg-dark-card dark:hover:bg-dark-muted"
               onClick={() => navigate("/browse")}
             >
               Browse Meals
@@ -48,9 +48,9 @@ const Landing = () => {
       <FeaturedMeals />
 
       {/* How It Works */}
-      <section className="py-16 bg-white dark:bg-gray-950">
+      <section className="py-16 bg-white dark:bg-dark-bg">
         <div className="container-custom">
-          <h2 className="text-3xl font-bold text-center mb-12">How It Works</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 dark:text-dark-text">How It Works</h2>
           
           <div className="grid md:grid-cols-3 gap-8">
             <HowItWorksStep
@@ -76,9 +76,9 @@ const Landing = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-16 bg-gray-50 dark:bg-gray-900">
+      <section className="py-16 bg-gray-50 dark:bg-black">
         <div className="container-custom">
-          <h2 className="text-3xl font-bold text-center mb-12">What Our Customers Say</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 dark:text-dark-text">What Our Customers Say</h2>
           
           <div className="grid md:grid-cols-3 gap-8">
             <TestimonialCard
@@ -112,7 +112,7 @@ const Landing = () => {
           </p>
           <Button 
             size="lg" 
-            className="bg-white text-idish-orange hover:bg-gray-100"
+            className="bg-white text-idish-orange hover:bg-gray-100 dark:bg-dark-card dark:hover:bg-dark-muted"
             onClick={() => isLoggedIn ? navigate("/browse") : navigate("/signup")}
           >
             {isLoggedIn ? "Browse Meals" : "Sign Up Now"}

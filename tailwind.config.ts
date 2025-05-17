@@ -70,6 +70,13 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				dark: {
+					bg: '#121212',
+					card: '#1A1A1A',
+					border: '#2A2A2A',
+					muted: '#333333',
+					text: '#E0E0E0'
 				}
 			},
 			fontFamily: {
@@ -115,8 +122,8 @@ export default {
 				'fade-in': 'fade-in 0.5s ease-out'
 			},
 			backgroundImage: {
-				'dark-browse-gradient': 'linear-gradient(to right, #FDE1D3, #24243e)',
-				'dark-home-gradient': 'linear-gradient(to right, rgb(249 115 22 / .9), #24243e)'
+				'dark-browse-gradient': 'linear-gradient(to right, #FDE1D3, #121212)',
+				'dark-home-gradient': 'linear-gradient(to right, rgb(249 115 22 / .9), #121212)'
 			}
 		}
 	},

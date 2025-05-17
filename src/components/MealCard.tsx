@@ -1,8 +1,10 @@
-
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Image as ImageIcon } from 'lucide-react';
+import { AspectRatio } from '@/components/ui/aspect-ratio';
+import React, { useState } from 'react';
 
 interface MealCardProps {
   id: string;
@@ -31,20 +33,31 @@ const MealCard = ({
   className = "",
   chefId
 }: MealCardProps) => {
+  const [imgError, setImgError] = useState(false);
+
   return (
     <Card className={`overflow-hidden transition-all hover:-translate-y-1 hover:shadow-md ${className}`}>
-      <div className="relative">
-        <img
-          src={image}
-          alt={name}
-          className="h-48 w-full object-cover"
-        />
-        {cuisine && (
-          <Badge className="absolute top-2 right-2">
-            {cuisine}
-          </Badge>
-        )}
-      </div>
+      {/* Image Section */}
+      {image && image.trim() !== "" && !imgError ? (
+        <div className="w-full">
+          <AspectRatio ratio={16 / 9}>
+            <img
+              src={image}
+              alt={name}
+              className="object-cover w-full h-full"
+              onError={() => setImgError(true)}
+            />
+          </AspectRatio>
+        </div>
+      ) : (
+        <div className="w-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+          <AspectRatio ratio={16 / 9}>
+            <div className="flex items-center justify-center h-full">
+              <ImageIcon size={40} className="text-gray-400" />
+            </div>
+          </AspectRatio>
+        </div>
+      )}
       <CardContent className="p-4">
         <h3 className="font-semibold text-lg line-clamp-1">{name}</h3>
         

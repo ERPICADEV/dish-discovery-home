@@ -66,7 +66,13 @@ const SignUp = () => {
       password: "",
       confirmPassword: "",
       role: "customer",
-    },
+      fullName: "",
+      phone: "",
+      location: "",
+      about: "",
+      experience: "",
+      profileImage: ""
+    } as any,
     mode: "onChange"
   });
 

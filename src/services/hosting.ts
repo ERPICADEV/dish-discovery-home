@@ -1,4 +1,3 @@
-
 import { api } from "./api";
 
 export interface Hosting {
@@ -24,10 +23,6 @@ export interface CreateHostingData {
   max_guests: number;
   price_per_guest: number;
   image_url?: string;
-}
-
-export interface BookingData {
-  seats: number;
 }
 
 // Chef creates a new hosting
@@ -71,33 +66,21 @@ export const getAllHostings = async () => {
   return response.hostings;
 };
 
-// Book a hosting
-export const bookHosting = async (hostingId: string, bookingData: BookingData) => {
-  const response = await api<{ message: string; booking: any }>(`/hosting/book/${hostingId}`, {
-    method: "POST",
-    body: JSON.stringify(bookingData),
+// Get hosting details by ID
+export const getHostingById = async (id: string) => {
+  const response = await api<{ hosting: Hosting }>(`/hosting/details/${id}`, {
+    method: "GET",
+  });
+  
+  return response.hosting;
+};
+
+// Delete a hosting
+export const deleteHosting = async (id: string) => {
+  const response = await api<{ message: string }>(`/hosting/${id}`, {
+    method: "DELETE",
     requiresAuth: true,
   });
   
   return response;
-};
-
-// Get bookings for a customer
-export const getCustomerBookings = async () => {
-  const response = await api<{ bookings: any[] }>("/hosting/bookings/customer", {
-    method: "GET",
-    requiresAuth: true,
-  });
-  
-  return response.bookings;
-};
-
-// Get bookings for a chef
-export const getChefBookings = async () => {
-  const response = await api<{ bookings: any[] }>("/hosting/bookings/chef", {
-    method: "GET",
-    requiresAuth: true,
-  });
-  
-  return response.bookings;
 };

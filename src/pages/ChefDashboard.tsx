@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { getChefDishes, Dish, updateDish, deleteDish } from "@/services/dishes";
 import { getChefOrders, Order, updateOrderStatus } from "@/services/orders";
-import { getChefHostings, Hosting, createHosting, updateHosting } from "@/services/hosting";
+import { getChefHostings, Hosting, createHosting, updateHosting, deleteHosting } from "@/services/hosting";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -140,8 +140,7 @@ const ChefDashboard = () => {
 
   const handleDeleteHosting = async (id: string) => {
     try {
-      // This function doesn't exist yet, but we're preparing for it
-      // await deleteHosting(id);
+      await deleteHosting(id);
       
       // Update local state
       setHostings(hostings.filter(h => h.id !== id));
@@ -403,7 +402,7 @@ const ChefDashboard = () => {
                         </div>
                       </div>
                     </CardContent>
-                    <CardFooter className="flex justify-end space-x-2">
+                    <CardFooter className="flex justify-between">
                       <Button 
                         variant="outline" 
                         size="sm"

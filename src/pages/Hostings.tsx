@@ -1,18 +1,16 @@
 import { useState } from "react";
-import { Hosting, bookHosting } from "@/services/hosting";
+import { Hosting } from "@/services/hosting";
 import { toast } from "@/hooks/use-toast";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useAuth } from "@/contexts/AuthContext";
-import { BookingForm, BookingFormData } from "@/components/hosting/BookingForm";
 import { HostingsList } from "@/components/hosting/HostingsList";
 import { SearchBar } from "@/components/hosting/SearchBar";
 import { useHostings } from "@/hooks/useHostings";
+import { useNavigate } from "react-router-dom";
 
 const Hostings = () => {
   const { filteredHostings, isLoading, searchQuery, setSearchQuery } = useHostings();
-  const [selectedHosting, setSelectedHosting] = useState<Hosting | null>(null);
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
   const { isLoggedIn, isCustomer } = useAuth();
+  const navigate = useNavigate();
 
   const handleBookNowClick = (hosting: Hosting) => {
     console.log('=== Book Now Click Debug ===');
@@ -33,37 +31,10 @@ const Hostings = () => {
       return;
     }
     
-    setSelectedHosting(hosting);
-    setIsBookingOpen(true);
+    // Navigate to the booking page
+    navigate(`/book-hosting/${hosting.id}`);
   };
 
-  const onBookingSubmit = async (data: BookingFormData) => {
-    if (!selectedHosting) {
-      return;
-    }
-    
-    try {
-      await bookHosting(selectedHosting.id, {
-        seats: data.seats
-      });
-
-      toast({
-        title: "Booking Confirmed!",
-        description: `You have successfully booked ${data.seats} seat(s) for "${selectedHosting.title}".`,
-      });
-      
-      setIsBookingOpen(false);
-      setSelectedHosting(null);
-    } catch (error) {
-      console.error("Failed to book hosting:", error);
-      toast({
-        title: "Booking Failed",
-        description: "There was an error processing your booking. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-  
   return (
     <div className="container-custom py-16">
       <h1 className="text-3xl font-bold mb-2">Culinary Experiences Near You</h1>
@@ -79,24 +50,6 @@ const Hostings = () => {
         searchQuery={searchQuery}
         onBookNowClick={handleBookNowClick}
       />
-      
-      {/* Booking Dialog */}
-      <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>{selectedHosting?.title}</DialogTitle>
-            <DialogDescription>
-              Fill out the form below to book your culinary experience.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <BookingForm 
-            selectedHosting={selectedHosting} 
-            onSubmit={onBookingSubmit} 
-            onCancel={() => setIsBookingOpen(false)} 
-          />
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

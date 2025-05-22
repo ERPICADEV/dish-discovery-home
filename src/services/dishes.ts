@@ -1,4 +1,3 @@
-
 import { api } from "./api";
 
 export interface Dish {
@@ -47,6 +46,7 @@ export const searchDishes = async (params: {
 export const getDishById = async (id: string) => {
   const response = await api<{ dish: Dish }>(`/dishes/${id}`, {
     method: "GET",
+    requiresAuth: true,
   });
   
   return response.dish;

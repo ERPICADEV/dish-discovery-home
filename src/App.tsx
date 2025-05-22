@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,6 +19,7 @@ import OrderDish from "./pages/OrderDish";
 import ChefProfile from "./pages/ChefProfile";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
+import BookHosting from "./pages/BookHosting";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +72,14 @@ const App = () => (
                 element={
                   <ProtectedRoute requiresCustomer={true}>
                     <Orders />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/book-hosting/:hostingId" 
+                element={
+                  <ProtectedRoute requiresCustomer={true}>
+                    <BookHosting />
                   </ProtectedRoute>
                 } 
               />

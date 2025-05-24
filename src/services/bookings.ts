@@ -5,13 +5,14 @@ export interface Booking {
   customer_id: string;
   chef_id: string;
   hosting_id: string;
-  seats: number;
+  number_of_guests: number;
   total_price: number;
   status: "pending" | "confirmed" | "cancelled" | "completed";
-  booking_date: string;
+  date: string;
   time_slot: string;
   created_at: string;
   updated_at: string;
+  special_requests?: string;
   hosting?: {
     title: string;
     location: string;
@@ -24,6 +25,7 @@ export interface CreateBookingData {
   seats: number;
   booking_date: string;
   time_slot: string;
+  special_requests?: string;
 }
 
 // Customer creates a new booking

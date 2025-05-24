@@ -17,6 +17,7 @@ const bookingSchema = z.object({
     .max(100, "Too many seats"),
   booking_date: z.string().min(1, "Please select a date"),
   time_slot: z.string().min(1, "Please select a time slot"),
+  special_requests: z.string().optional(),
 });
 
 export type BookingFormData = z.infer<typeof bookingSchema>;
@@ -27,6 +28,14 @@ interface BookingFormProps {
   onCancel: () => void;
 }
 
+// Define a mapping from time slot name to the full descriptive string and the time string
+const timeSlotDetails: { [key: string]: { display: string, time: string } } = {
+  "breakfast": { display: "Breakfast (8AM - 10AM)", time: "08:00" },
+  "lunch": { display: "Lunch (12PM - 2PM)", time: "13:00" },
+  "dinner": { display: "Dinner (6PM - 8PM)", time: "19:00" },
+  // Add other mappings as needed based on your available time slots
+};
+
 export const BookingForm = ({ selectedHosting, onSubmit, onCancel }: BookingFormProps) => {
   const form = useForm<BookingFormData>({
     resolver: zodResolver(bookingSchema),
@@ -34,6 +43,7 @@ export const BookingForm = ({ selectedHosting, onSubmit, onCancel }: BookingForm
       seats: 2,
       booking_date: "",
       time_slot: "",
+      special_requests: "",
     }
   });
 
@@ -140,10 +150,27 @@ export const BookingForm = ({ selectedHosting, onSubmit, onCancel }: BookingForm
               <FormControl>
                 <select {...field} className="w-full border rounded px-3 py-2 bg-background">
                   <option value="">Select a time slot</option>
-                  {selectedHosting?.time_slots.map(slot => (
-                    <option key={slot} value={slot}>{slot}</option>
+                  {selectedHosting?.time_slots.map(slotName => (
+                    <option key={slotName} value={slotName}>{timeSlotDetails[slotName]?.display || slotName}</option>
                   ))}
                 </select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="special_requests"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Special Requests (Optional)</FormLabel>
+              <FormControl>
+                <textarea 
+                  {...field}
+                  className="w-full border rounded px-3 py-2 bg-background min-h-[100px]"
+                  placeholder="Any dietary restrictions, allergies, or special requests?"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -84,6 +84,12 @@ const Navbar = () => {
                 </Link>
               )}
               
+              {isCustomer && (
+                <Link to="/bookings" className="font-medium hover:text-idish-orange transition-colors dark:text-white dark:hover:text-idish-orange">
+                  My Bookings
+                </Link>
+              )}
+              
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -118,6 +124,12 @@ const Navbar = () => {
                     <DropdownMenuItem onClick={() => navigate("/orders")}>
                       <ShoppingBag className="mr-2 h-4 w-4" />
                       <span>My Orders</span>
+                    </DropdownMenuItem>
+                  )}
+                  {isCustomer && (
+                    <DropdownMenuItem onClick={() => navigate("/bookings")}>
+                      <Calendar className="mr-2 h-4 w-4" />
+                      <span>My Bookings</span>
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem onClick={handleLogout}>
@@ -253,6 +265,17 @@ const Navbar = () => {
                 >
                   <ShoppingBag size={20} />
                   <span>My Orders</span>
+                </Link>
+              )}
+              
+              {isCustomer && (
+                <Link 
+                  to="/bookings" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center space-x-2 font-medium hover:text-idish-orange transition-colors dark:text-white dark:hover:text-idish-orange"
+                >
+                  <Calendar size={20} />
+                  <span>My Bookings</span>
                 </Link>
               )}
               

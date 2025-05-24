@@ -20,6 +20,7 @@ import ChefProfile from "./pages/ChefProfile";
 import Profile from "./pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BookHosting from "./pages/BookHosting";
+import Bookings from "./pages/Bookings";
 
 const queryClient = new QueryClient();
 
@@ -72,6 +73,14 @@ const App = () => (
                 element={
                   <ProtectedRoute requiresCustomer={true}>
                     <Orders />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/bookings" 
+                element={
+                  <ProtectedRoute requiresCustomer={true}>
+                    <Bookings />
                   </ProtectedRoute>
                 } 
               />

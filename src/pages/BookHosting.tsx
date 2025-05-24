@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams , useNavigate} from "react-router-dom";
 import { Hosting, getHostingById } from "@/services/hosting";
 import { BookingForm, BookingFormData } from "@/components/hosting/BookingForm";
 import { toast } from "@/hooks/use-toast";
@@ -10,6 +10,7 @@ import { createBooking } from "@/services/bookings";
 
 const BookHosting = () => {
   const { hostingId } = useParams<{ hostingId: string }>();
+  const navigate = useNavigate(); // ✅ Paste this right here
   const [hosting, setHosting] = useState<Hosting | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -37,12 +38,25 @@ const BookHosting = () => {
 
   const onBookingSubmit = async (data: BookingFormData) => {
     if (!hostingId) return;
+
+    // Define a mapping from time slot name to the time string
+    const timeSlotNameToTimeString: { [key: string]: string } = {
+      "breakfast": "08:00", // Adjust time strings as per your backend expectation
+      "lunch": "13:00",
+      "dinner": "19:00",
+      // Add other mappings as needed
+    };
+
+    // Get the time string to send to the backend based on the selected time slot name
+    const timeSlotToSend = timeSlotNameToTimeString[data.time_slot] || data.time_slot; // Fallback to the name if mapping not found
+
     try {
       await createBooking({
         hosting_id: hostingId,
         seats: data.seats,
         booking_date: data.booking_date,
-        time_slot: data.time_slot
+        time_slot: timeSlotToSend,
+        special_requests: data.special_requests || undefined,
       });
 
       toast({
@@ -51,7 +65,7 @@ const BookHosting = () => {
       });
       
       // Optionally navigate the user to their bookings page or a confirmation page
-      // navigate('/my-bookings'); 
+      navigate('/bookings'); 
 
     } catch (error) {
       console.error("Failed to book hosting:", error);

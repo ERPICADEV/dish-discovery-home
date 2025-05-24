@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { getChefDishes, Dish, updateDish, deleteDish } from "@/services/dishes";
 import { getChefOrders, Order, updateOrderStatus } from "@/services/orders";
 import { getChefHostings, Hosting, createHosting, updateHosting, deleteHosting } from "@/services/hosting";
+import { getChefBookings } from "@/services/bookings";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,10 +25,32 @@ import AddHostingForm from "@/components/AddHostingForm";
 import EditDishForm from "@/components/EditDishForm";
 import EditHostingForm from "@/components/EditHostingForm";
 
+// Define Booking type based on service file
+interface Booking {
+  id: string;
+  customer_id: string;
+  chef_id: string;
+  hosting_id: string;
+  number_of_guests: number;
+  total_price: number;
+  status: "pending" | "confirmed" | "cancelled" | "completed";
+  date: string;
+  time_slot: string;
+  created_at: string;
+  updated_at: string;
+  special_requests?: string;
+  hosting?: {
+    title: string;
+    location: string;
+    image_url?: string;
+  };
+}
+
 const ChefDashboard = () => {
   const [dishes, setDishes] = useState<Dish[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [hostings, setHostings] = useState<Hosting[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
@@ -43,14 +66,16 @@ const ChefDashboard = () => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
-        const [dishesData, ordersData, hostingsData] = await Promise.all([
+        const [dishesData, ordersData, hostingsData, bookingsData] = await Promise.all([
           getChefDishes(),
           getChefOrders(),
-          getChefHostings()
+          getChefHostings(),
+          getChefBookings(),
         ]);
         setDishes(dishesData);
         setOrders(ordersData);
         setHostings(hostingsData);
+        setBookings(bookingsData);
       } catch (error) {
         console.error("Failed to fetch chef data:", error);
         toast({
@@ -228,6 +253,7 @@ const ChefDashboard = () => {
             <TabsTrigger value="dishes">Your Dishes</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="hostings">Hostings</TabsTrigger>
+            <TabsTrigger value="bookings">Bookings</TabsTrigger>
           </TabsList>
           
           <TabsContent value="dishes">
@@ -422,6 +448,26 @@ const ChefDashboard = () => {
                       </Button>
                     </CardFooter>
                   </Card>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+          
+          <TabsContent value="bookings">
+            <div className="flex justify-between mb-6">
+              <h2 className="text-xl font-semibold">Customer Bookings</h2>
+            </div>
+            {bookings.length === 0 ? (
+              <div className="text-center py-12">
+                <h2 className="text-xl font-semibold mb-2">No bookings yet!</h2>
+                <p className="text-gray-600">
+                  Once customers book your hostings, they will appear here.
+                </p>
+              </div>
+            ) : (
+              <div className="grid gap-6 md:grid-cols-2">
+                {bookings.map((booking) => (
+                  <BookingCard key={booking.id} booking={booking} />
                 ))}
               </div>
             )}
@@ -636,6 +682,51 @@ const OrderCard = ({
           Update Status
         </Button>
       </CardFooter>
+    </Card>
+  );
+};
+
+const timeSlotLabels: Record<string, string> = {
+  "08:00:00": "Breakfast (8AM - 10AM)",
+  "13:00:00": "Lunch (12PM - 2PM)",
+  "19:00:00": "Dinner (6PM - 8PM)",
+  // Add more time slots as needed
+};
+
+const BookingCard = ({ booking }: { booking: Booking }) => {
+  const formatDate = (dateString: string) => {
+    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
+  const getStatusBadge = (status: Booking["status"]) => {
+    switch (status) {
+      case "pending":
+        return <Badge variant="secondary">Pending</Badge>;
+      case "confirmed":
+        return <Badge className="bg-green-500 hover:bg-green-600">Confirmed</Badge>;
+      case "cancelled":
+        return <Badge variant="destructive">Cancelled</Badge>;
+      case "completed":
+        return <Badge className="bg-blue-500 hover:bg-blue-600">Completed</Badge>;
+      default:
+        return <Badge variant="secondary">{status}</Badge>;
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Booking for {booking.hosting?.title || 'Unknown Hosting'}</CardTitle>
+        <CardDescription>Booking ID: {booking.id}</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-2">
+        <p className="text-sm">Number of Guests: {booking.number_of_guests}</p>
+        <p className="text-sm">Total Price: ${booking.total_price.toFixed(2)}</p>
+        <p className="text-sm">Date: {formatDate(booking.date)}</p>
+        <p className="text-sm">Time Slot: {timeSlotLabels[booking.time_slot] ||booking.time_slot}</p>
+        <div className="text-sm">Status: {getStatusBadge(booking.status)}</div>
+      </CardContent>
     </Card>
   );
 };

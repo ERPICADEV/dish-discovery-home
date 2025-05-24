@@ -21,16 +21,6 @@ const Hostings = () => {
     });
     console.log('2. Selected hosting:', hosting);
 
-    if (!isLoggedIn || !isCustomer) {
-      console.log('3. Booking blocked - User not logged in or not a customer');
-      toast({
-        title: "Login Required",
-        description: "Please log in as a customer to book a hosting.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
     // Navigate to the booking page
     navigate(`/book-hosting/${hosting.id}`);
   };

@@ -47,6 +47,7 @@ const hostingSchema = z.object({
   max_guests: z.coerce.number().int().positive("Number of guests must be positive"),
   price_per_guest: z.coerce.number().positive("Price must be positive"),
   image_url: z.string().optional(),
+  available: z.boolean().default(true),
 });
 
 type HostingFormValues = z.infer<typeof hostingSchema>;
@@ -70,9 +71,10 @@ const AddHostingForm = ({ onSuccess }: AddHostingFormProps) => {
       location: "",
       available_days: [],
       time_slots: [],
-      max_guests: 4,
+      max_guests: 1,
       price_per_guest: 0,
       image_url: "",
+      available: true
     },
   });
 

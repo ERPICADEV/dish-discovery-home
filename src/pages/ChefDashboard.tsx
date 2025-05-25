@@ -230,6 +230,33 @@ const ChefDashboard = () => {
     });
   };
 
+  const handleToggleAvailability = async (hosting: Hosting) => {
+    try {
+      // Send the entire hosting object with the updated 'available' field
+      await updateHosting(hosting.id, {
+        ...hosting,
+        available: !hosting.available
+      });
+      
+      // Update local state
+      setHostings(hostings.map(h => 
+        h.id === hosting.id ? { ...h, available: !h.available } : h
+      ));
+      
+      toast({
+        title: "Success",
+        description: `Hosting ${hosting.available ? 'made unavailable' : 'made available'} successfully.`,
+      });
+    } catch (error) {
+      console.error("Failed to toggle hosting availability:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update hosting availability.",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (!isChef) {
     return (
       <div className="container-custom py-16">
@@ -395,57 +422,58 @@ const ChefDashboard = () => {
               <div className="grid gap-6 md:grid-cols-2">
                 {hostings.map((hosting) => (
                   <Card key={hosting.id}>
-                    <CardHeader>
+                    <CardHeader className="pb-3">
                       <CardTitle>{hosting.title}</CardTitle>
                       <CardDescription>Location: {hosting.location}</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <p className="text-sm">{hosting.description}</p>
-                        <div className="flex justify-between mt-4">
-                          <span className="font-medium">Price per guest:</span>
-                          <span>${hosting.price_per_guest.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="font-medium">Max guests:</span>
-                          <span>{hosting.max_guests}</span>
-                        </div>
-                        <div className="mt-4">
-                          <h4 className="font-medium mb-2">Available days:</h4>
-                          <div className="flex flex-wrap gap-2">
-                            {hosting.available_days.map((day) => (
-                              <Badge key={day}>{day}</Badge>
-                            ))}
-                          </div>
-                        </div>
-                        <div className="mt-4">
-                          <h4 className="font-medium mb-2">Time slots:</h4>
-                          <div className="flex flex-wrap gap-2">
-                            {hosting.time_slots.map((slot) => (
-                              <Badge key={slot} variant="outline">{slot}</Badge>
-                            ))}
-                          </div>
-                        </div>
+                    <CardContent className="space-y-2 min-h-[160px]">
+                       {hosting.image_url && (
+                        <div className="h-40 w-full mb-2 rounded-md overflow-hidden">
+                           <img 
+                             src={hosting.image_url} 
+                             alt={hosting.title} 
+                             className="h-full w-full object-cover"
+                           />
+                         </div>
+                       )}
+                      <p className="text-sm line-clamp-2">{hosting.description}</p>
+                      <div className="flex justify-between mt-4">
+                        <span className="font-medium">Price per guest:</span>
+                        <span>${hosting.price_per_guest.toFixed(2)}</span>
                       </div>
+                      <div className="flex justify-between">
+                        <span className="font-medium">Max guests:</span>
+                        <span>{hosting.max_guests}</span>
+                      </div>
+                      {/* Add available days and time slots here if needed, similar to DishCard */}
                     </CardContent>
-                    <CardFooter className="flex justify-between">
-                      <Button 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => {
-                          setEditingHosting(hosting);
-                          setIsEditHostingDialogOpen(true);
-                        }}
-                      >
-                        Edit
-                      </Button>
-                      <Button 
-                        variant="destructive" 
-                        size="sm"
-                        onClick={() => handleDeleteHosting(hosting.id)}
-                      >
-                        Delete
-                      </Button>
+                    <CardFooter className="flex justify-between items-center">
+                      <div className="flex items-center space-x-2">
+                        <Switch 
+                          checked={hosting.available} 
+                          onCheckedChange={() => handleToggleAvailability(hosting)}
+                        />
+                        <Label>{hosting.available ? "Available" : "Unavailable"}</Label>
+                      </div>
+                      <div className="space-x-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            setEditingHosting(hosting);
+                            setIsEditHostingDialogOpen(true);
+                          }}
+                        >
+                          Edit
+                        </Button>
+                        <Button 
+                          variant="destructive" 
+                          size="sm"
+                          onClick={() => handleDeleteHosting(hosting.id)}
+                        >
+                          Delete
+                        </Button>
+                      </div>
                     </CardFooter>
                   </Card>
                 ))}

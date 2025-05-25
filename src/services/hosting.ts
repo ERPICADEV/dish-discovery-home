@@ -12,6 +12,7 @@ export interface Hosting {
   price_per_guest: number;
   image_url?: string;
   created_at: string;
+  available: boolean;
 }
 
 export interface CreateHostingData {
@@ -23,6 +24,7 @@ export interface CreateHostingData {
   max_guests: number;
   price_per_guest: number;
   image_url?: string;
+  available?: boolean;
 }
 
 // Chef creates a new hosting

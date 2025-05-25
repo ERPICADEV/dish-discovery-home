@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -40,17 +39,19 @@ const timeSlots = [
   "08:00", "10:00", "12:00", "14:00", "16:00", "18:00", "20:00"
 ];
 
-const hostingSchema = z.object({
-  title: z.string().min(3, "Title must be at least 3 characters"),
+const formSchema = z.object({
+  title: z.string().min(1, "Title is required"),
   description: z.string().optional(),
-  location: z.string().min(3, "Location must be at least 3 characters"),
-  available_days: z.array(z.string()).min(1, "Select at least one day"),
-  time_slots: z.array(z.string()).min(1, "Select at least one time slot"),
-  max_guests: z.coerce.number().int().positive("Must be a positive number"),
+  location: z.string().min(1, "Location is required"),
+  available_days: z.array(z.string()).min(1, "At least one day must be selected"),
+  time_slots: z.array(z.string()).min(1, "At least one time slot must be selected"),
+  max_guests: z.coerce.number().positive("Max guests must be positive"),
   price_per_guest: z.coerce.number().positive("Price must be positive"),
+  image_url: z.string().optional(),
+  available: z.boolean()
 });
 
-type HostingFormValues = z.infer<typeof hostingSchema>;
+type HostingFormValues = z.infer<typeof formSchema>;
 
 interface EditHostingFormProps {
   hosting: Hosting;
@@ -62,7 +63,7 @@ const EditHostingForm = ({ hosting, onSuccess, onCancel }: EditHostingFormProps)
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<HostingFormValues>({
-    resolver: zodResolver(hostingSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       title: hosting.title,
       description: hosting.description || "",
@@ -71,6 +72,8 @@ const EditHostingForm = ({ hosting, onSuccess, onCancel }: EditHostingFormProps)
       time_slots: hosting.time_slots,
       max_guests: hosting.max_guests,
       price_per_guest: hosting.price_per_guest,
+      image_url: hosting.image_url,
+      available: hosting.available,
     },
   });
 
@@ -85,6 +88,8 @@ const EditHostingForm = ({ hosting, onSuccess, onCancel }: EditHostingFormProps)
         time_slots: data.time_slots,
         max_guests: data.max_guests,
         price_per_guest: data.price_per_guest,
+        image_url: data.image_url,
+        available: data.available,
       });
       toast({
         title: "Success",
@@ -302,6 +307,20 @@ const EditHostingForm = ({ hosting, onSuccess, onCancel }: EditHostingFormProps)
               </FormItem>
             )}
           />
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="available"
+            checked={form.watch("available")}
+            onCheckedChange={(checked) => form.setValue("available", checked as boolean)}
+          />
+          <label
+            htmlFor="available"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Available for booking
+          </label>
         </div>
 
         <div className="flex justify-end gap-2">
